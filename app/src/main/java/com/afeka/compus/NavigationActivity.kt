@@ -86,7 +86,7 @@ class NavigationActivity : AppCompatActivity() {
             })
         }
 
-        val place = graph!!.getPlaces().first { it.getPlaceName() == graph!!.getWps()[currentWaypointId]!!.getPlaceId() } // TODO: BUG IS HERE NULL
+        val place = graph!!.getPlaces().first { it.getPlaceName() == graph!!.getWps()[currentWaypointId]!!.getPlaceId() }
         //TODO: implement moving between Places
         val areaNames = place.getAreas().map { it.getAreaId()}
 
@@ -152,8 +152,7 @@ class NavigationActivity : AppCompatActivity() {
         if (forwardBtn.isEnabled)
             colorButton(forwardBtn, R.color.dark)
         colorButtons(arrayOf(leftBtn, rightBtn, backBtn), R.color.dark)
-        val index = shortestPath!!.indexOf(currentWaypointId)
-        when (index) {
+        when (val index = shortestPath!!.indexOf(currentWaypointId)) {
             -1 -> {
                 colorButton(backBtn, R.color.green_500)
                 odedAmar("Turn back.")
@@ -247,21 +246,24 @@ class NavigationActivity : AppCompatActivity() {
             println("Image not found: $imageName")
             return
         }
-        if (direction == 1) { // rotate right
-            viewFlipper.setInAnimation(this, R.anim.slide_in_right)
-            viewFlipper.setOutAnimation(this, R.anim.slide_out_left)
-            viewFlipper.showNext()
-        } else if (direction == -1) { // rotate left
-            viewFlipper.setInAnimation(this, android.R.anim.slide_in_left)
-            viewFlipper.setOutAnimation(this, android.R.anim.slide_out_right)
-            viewFlipper.showPrevious()
-        }
-        else if (direction == 2 || direction == -2) { // rotate right twice, to turn 180
-            viewFlipper.setInAnimation(this, R.anim.slide_in_right)
-            viewFlipper.setOutAnimation(this, R.anim.slide_out_left)
-            viewFlipper.showNext()
-            Thread.sleep(500)
-            viewFlipper.showNext()
+        when (direction) {
+            1 -> { // rotate right
+                viewFlipper.setInAnimation(this, R.anim.slide_in_right)
+                viewFlipper.setOutAnimation(this, R.anim.slide_out_left)
+                viewFlipper.showNext()
+            }
+            -1 -> { // rotate left
+                viewFlipper.setInAnimation(this, android.R.anim.slide_in_left)
+                viewFlipper.setOutAnimation(this, android.R.anim.slide_out_right)
+                viewFlipper.showPrevious()
+            }
+            2, -2 -> { // rotate right twice, to turn 180
+                viewFlipper.setInAnimation(this, R.anim.slide_in_right)
+                viewFlipper.setOutAnimation(this, R.anim.slide_out_left)
+                viewFlipper.showNext()
+                Thread.sleep(500)
+                viewFlipper.showNext()
+            }
         }
     }
 
