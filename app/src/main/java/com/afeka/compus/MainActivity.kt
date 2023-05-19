@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.afeka.compus.objects.Graph
 import com.afeka.compus.objects.Site
 import com.afeka.compus.utility.AutoSuggestAdapter
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); // disable dark mode
         var policy = ThreadPolicy.Builder().permitAll().build() // synchronous network calls
         StrictMode.setThreadPolicy(policy) // makes the app wait until site is loaded, which is a short duration
 
