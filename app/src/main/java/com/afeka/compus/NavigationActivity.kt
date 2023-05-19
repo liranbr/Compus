@@ -15,6 +15,8 @@ import com.bumptech.glide.request.transition.Transition
 import android.graphics.drawable.Drawable
 import androidx.annotation.ColorRes
 import androidx.core.view.children
+import com.afeka.compus.objects.Area
+import com.afeka.compus.objects.Place
 import com.afeka.compus.utility.UtilityMethods
 import com.bumptech.glide.request.target.CustomTarget
 import com.google.android.material.button.MaterialButton
@@ -27,7 +29,7 @@ import java.util.Stack
 class NavigationActivity : AppCompatActivity() {
 
     private lateinit var oded: TextToSpeech
-    private lateinit var panoramaCarouselViews: Array<ImageView>
+    private lateinit var carouselViews: Array<ImageView>
     private lateinit var viewFlipper: ViewFlipper
     private lateinit var areaMapView: ImageView
     private lateinit var backBtn: ImageButton
@@ -38,17 +40,19 @@ class NavigationActivity : AppCompatActivity() {
     private lateinit var toggleGroup: MaterialButtonToggleGroup
 
     private var isNavigation = false
-    private var currentDirection = 0 // 0 = up, 1 = right, 2 = down, 3 = left
-    private var fromWherePOI = ""
-    private var currentWaypointId = ""
-    private var destinationPOI = ""
+    private var currDirection = 0 // 0 = up, 1 = right, 2 = down, 3 = left
+    private var startPointPOI = ""
+    private var currWpId = ""
+    private lateinit var currArea: Area
+    private lateinit var currPlace: Place
+    private var destPOI = ""
     private var destWpId = ""
     private val directions = arrayOf("up", "right", "down", "left") // TODO: Need?
-    private var shortestPathDirections = IntArray(0)
-    private var shortestPath :List<String> ?= null
-    private val previousWaypoints = Stack<String>()
-    private val waypointImages = HashMap<String, Bitmap>()
-    private var haveReachedDestination = false
+    private var shortPathDirections = IntArray(0)
+    private var shortPathWpIds: List<String> ?= null
+    private val prevWps = Stack<String>()
+    private val wpImages = HashMap<String, Bitmap>()
+    private var reachedDest = false
     private var site: Site? = null
     private var graph: Graph? = null
 
@@ -60,53 +64,32 @@ class NavigationActivity : AppCompatActivity() {
         findViews()
         val extras = intent.extras
         if (extras != null) {
-            fromWherePOI = extras.getString("key0")?.split(", ")?.get(1) ?: ""
+            startPointPOI = extras.getString("key0")?.split(", ")?.get(1) ?: ""
             if (extras.containsKey("key1")) {
-                destinationPOI = extras.getString("key1")?.split(", ")?.get(1) ?: ""
-                if (destinationPOI.isNotEmpty()) {
+                destPOI = extras.getString("key1")?.split(", ")?.get(1) ?: ""
+                if (destPOI.isNotEmpty()) {
                     isNavigation = true
                 }
             }
-            currentWaypointId = graph!!.getPoiWps()[fromWherePOI] ?: ""
-            destWpId = graph!!.getPoiWps()[destinationPOI] ?: ""
+            currWpId = graph!!.getPoiWps()[startPointPOI] ?: ""
+            destWpId = graph!!.getPoiWps()[destPOI] ?: ""
         }
 
         // Download panorama images for all wps, load relevant ones into the image carousel TODO: implement download in MainActivity
         MainActivity.imageURLs!!.forEach { entry ->
             Glide.with(this).asBitmap().load(entry.value).into(object: CustomTarget<Bitmap>() {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    waypointImages[entry.key] = resource
+                    wpImages[entry.key] = resource
                     val innerImageNameParts = entry.key.split("-".toRegex()).toTypedArray()
                     val imageDirection = innerImageNameParts[innerImageNameParts.size - 1]
-                    if (entry.key.contains(currentWaypointId)) {
-                        panoramaCarouselViews[directions.indexOf(imageDirection)].setImageBitmap(resource)
+                    if (entry.key.contains(currWpId)) {
+                        carouselViews[directions.indexOf(imageDirection)].setImageBitmap(resource)
                     }
                 }
                 override fun onLoadCleared(placeholder: Drawable?) {}
             })
         }
 
-        val place = graph!!.getPlaces().first { it.getPlaceName() == graph!!.getWps()[currentWaypointId]!!.getPlaceId() }
-        //TODO: implement moving between Places
-        val areaNames = place.getAreas().map { it.getAreaId()}
-
-        // Setup Toggle Group, a button per area
-        for (i in areaNames.indices) {
-            val mb = MaterialButton(this)
-            mb.text = areaNames[i]
-            mb.setPadding(0, 0, 0, 0)
-            mb.setTextColor(ContextCompat.getColorStateList(this, R.color.selectable_floor_button_text))
-            mb.backgroundTintList = ContextCompat.getColorStateList(this, R.color.selectable_floor_button_background)
-            toggleGroup.addView(mb, i)
-        }
-
-        for (i in areaNames.indices) {
-            val areaName = areaNames[i]
-            val url = MainActivity.imageURLs!!["area_map_$areaName"] // TODO: Use area.areaMap
-            toggleGroup.getChildAt(i).setOnClickListener {
-                Glide.with(this).load(url).placeholder(R.drawable.compus_logo).into(areaMapView)
-            }
-        }
         if (isNavigation) {
             makeShortestPath()
             oded = TextToSpeech(applicationContext) { status ->
@@ -116,17 +99,32 @@ class NavigationActivity : AppCompatActivity() {
                 }
             }
         }
+        updatePlace()
         updateStatus()
         setListeners()
     }
 
+    private fun updatePlace() {
+        currPlace = placeFromWp(currWpId)
+        val areaNames = currPlace.getAreas().map { it.getAreaId()}
+        // Set up area map toggle buttons, currently invisible
+        toggleGroup.removeAllViews()
+        areaNames.forEach { toggleGroup.addView(MaterialButton(this).apply { text = it }) }
+        for (i in areaNames.indices) {
+            val areaName = areaNames[i]
+            val url = MainActivity.imageURLs!!["area_map_$areaName"]
+            toggleGroup.getChildAt(i).setOnClickListener {
+                Glide.with(this).load(url).placeholder(R.drawable.compus_logo).into(areaMapView)
+            }
+        }
+    }
     private fun makeShortestPath() {
-        shortestPath = MainActivity.sm.getShortestPath( site!!.getSiteName(),
-            fromWherePOI, destinationPOI, MainActivity.a11yMode)?.map { it.getId() } ?: return
+        shortPathWpIds = MainActivity.sm.getShortestPath( site!!.getSiteName(),
+            startPointPOI, destPOI, MainActivity.a11yMode)?.map { it.getId() } ?: return
         val neighbours = MainActivity.graph!!.getWpNeighs()
-        shortestPathDirections = IntArray(shortestPath!!.size - 1)
-        for (i in 0 until shortestPath!!.size - 1) {
-            shortestPathDirections[i] = neighbours[shortestPath!![i]]!!.indexOf(shortestPath!![i + 1])
+        shortPathDirections = IntArray(shortPathWpIds!!.size - 1)
+        for (i in 0 until shortPathWpIds!!.size - 1) {
+            shortPathDirections[i] = neighbours[shortPathWpIds!![i]]!!.indexOf(shortPathWpIds!![i + 1])
         }
     }
 
@@ -138,7 +136,7 @@ class NavigationActivity : AppCompatActivity() {
         rightBtn = findViewById(R.id.Navigation_IMGBTN_right)
         reportBTN = findViewById(R.id.Navigation_FAB_report)
         toggleGroup = findViewById(R.id.Navigation_MBTG_navigation)
-        panoramaCarouselViews = arrayOf(
+        carouselViews = arrayOf(
             findViewById(R.id.Navigation_IMG_Indoor_up),
             findViewById(R.id.Navigation_IMG_Indoor_right),
             findViewById(R.id.Navigation_IMG_Indoor_down),
@@ -148,27 +146,27 @@ class NavigationActivity : AppCompatActivity() {
 
     private fun getCurrentStep() {
         if (!isNavigation) return
-        if (haveReachedDestination) return
+        if (reachedDest) return
         if (forwardBtn.isEnabled)
             colorButton(forwardBtn, R.color.dark)
         colorButtons(arrayOf(leftBtn, rightBtn, backBtn), R.color.dark)
-        when (val index = shortestPath!!.indexOf(currentWaypointId)) {
+        when (val index = shortPathWpIds!!.indexOf(currWpId)) {
             -1 -> {
                 colorButton(backBtn, R.color.green_500)
                 odedAmar("Turn back.")
             }
-            shortestPath!!.size - 1 -> {
+            shortPathWpIds!!.size - 1 -> {
                 // TODO: Improve clarity of having reached destination
                 colorButtons(arrayOf(leftBtn, forwardBtn, rightBtn, backBtn), R.color.green_500)
                 odedAmar("You have reached your destination.")
-                haveReachedDestination = true
+                reachedDest = true
             }
             else -> { // still en route
-                when (shortestPathDirections[index]) {
-                    currentDirection -> {
+                when (shortPathDirections[index]) {
+                    currDirection -> {
                         colorButton(forwardBtn, R.color.green_500)
                     }
-                    (currentDirection + 1) % 4 -> {
+                    (currDirection + 1) % 4 -> {
                         colorButton(rightBtn, R.color.green_500)
                         odedAmar("Turn right.")
                     }
@@ -182,13 +180,16 @@ class NavigationActivity : AppCompatActivity() {
     }
 
     private fun updateStatus() {
+        // Update the place, and area buttons
+        if (graph!!.getWps()[currWpId]!!.getPlaceId() != currPlace.getPlaceName())
+            updatePlace()
         // Update the area map
-        val currentAreaId = graph!!.getWps()[currentWaypointId]!!.getAreaId()
+        val currentAreaId = graph!!.getWps()[currWpId]!!.getAreaId()
         toggleGroup.children.filterIsInstance<MaterialButton>()
             .firstOrNull { it.text == currentAreaId && !it.isChecked }?.performClick()
 
         // Check if possible to move forward
-        val canMoveForward = graph!!.getWpNeighs()[currentWaypointId]!![currentDirection] != ""
+        val canMoveForward = graph!!.getWpNeighs()[currWpId]!![currDirection] != ""
         val color = if (canMoveForward) R.color.dark else R.color.med_dark
         forwardBtn.setBackgroundColor(ContextCompat.getColor(this, color))
         forwardBtn.isEnabled = canMoveForward
@@ -208,41 +209,41 @@ class NavigationActivity : AppCompatActivity() {
         }
         forwardBtn.setOnClickListener {
             // move forward, to the next vertex in the graph
-            val nextVertex = graph!!.getWpNeighs()[currentWaypointId]?.get(currentDirection)
+            val nextVertex = graph!!.getWpNeighs()[currWpId]?.get(currDirection)
                 ?: return@setOnClickListener
             for (i in directions.indices) {
                 val imageName = nextVertex + "-" + directions[i]
-                if (waypointImages.containsKey(imageName))
-                    panoramaCarouselViews[i].setImageBitmap(waypointImages[imageName])
+                if (wpImages.containsKey(imageName))
+                    carouselViews[i].setImageBitmap(wpImages[imageName])
             }
-            previousWaypoints.add(currentWaypointId)
-            currentWaypointId = nextVertex
+            prevWps.add(currWpId)
+            currWpId = nextVertex
             updateStatus()
         }
         backBtn.setOnClickListener {
             // Move to the previous waypoint according to the stack // TODO: grey-out if stack is empty
-            if (previousWaypoints.size <= 0) return@setOnClickListener
-            val previousVertex = previousWaypoints.peek()
+            if (prevWps.size <= 0) return@setOnClickListener
+            val previousVertex = prevWps.peek()
             for (i in directions.indices) {
                 val imageName = previousVertex + "-" + directions[i]
-                if (waypointImages.containsKey(imageName))
-                    panoramaCarouselViews[i].setImageBitmap(waypointImages[imageName])
+                if (wpImages.containsKey(imageName))
+                    carouselViews[i].setImageBitmap(wpImages[imageName])
             }
-            currentWaypointId = previousWaypoints.pop()
+            currWpId = prevWps.pop()
             updateStatus()
         }
         reportBTN.setOnClickListener {
-            val currentImageURL = MainActivity.imageURLs?.get(currentWaypointId + "-" + directions[currentDirection])
+            val currentImageURL = MainActivity.imageURLs?.get(currWpId + "-" + directions[currDirection])
             UtilityMethods.switchActivityWithData(this, ReportActivity::class.java,
-                currentImageURL!!, currentWaypointId, currentDirection.toString())
+                currentImageURL!!, currWpId, currDirection.toString())
         }
     }
 
     private fun rotateImage(direction: Int) {
-        currentDirection += direction
-        currentDirection = (currentDirection + 4) % 4
-        val imageName = currentWaypointId + "-" + directions[currentDirection]
-        if (!waypointImages.containsKey(imageName)) {
+        currDirection += direction
+        currDirection = (currDirection + 4) % 4
+        val imageName = currWpId + "-" + directions[currDirection]
+        if (!wpImages.containsKey(imageName)) {
             println("Image not found: $imageName")
             return
         }
@@ -269,7 +270,7 @@ class NavigationActivity : AppCompatActivity() {
 
     // oded amer learim yadaim
     private fun odedAmar(text: String) {
-        if (!haveReachedDestination)
+        if (!reachedDest)
             oded.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
     }
 
@@ -280,5 +281,10 @@ class NavigationActivity : AppCompatActivity() {
         for (imageButton in imageButtons)
             imageButton.setBackgroundColor(ContextCompat.getColor(this, id))
     }
+
+    private fun placeFromWp(wpId: String): Place {
+        return graph!!.getPlaces().first { it.getPlaceName() == graph!!.getWps()[wpId]!!.getPlaceId() }
+    }
+
 
 }
