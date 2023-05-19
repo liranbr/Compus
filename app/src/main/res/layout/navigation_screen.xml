@@ -79,7 +79,7 @@
 
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/Navigation_MBTG_navigation"
-            android:layout_width="50sp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
@@ -90,12 +90,12 @@
 
         <ImageButton
             android:id="@+id/Navigation_IMGBTN_back"
-            android:layout_width="60sp"
-            android:layout_height="60sp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:background="@color/dark"
             android:src="@drawable/undo_arrow_icon"
-            android:padding="5sp"
-            android:layout_margin="3sp"
+            android:padding="5dp"
+            android:layout_margin="3dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -112,27 +112,27 @@
 
         <ImageButton
             android:id="@+id/Navigation_IMGBTN_left"
-            android:layout_margin="3sp"
+            android:layout_margin="3dp"
             android:src="@drawable/rotate_left_icon"
             android:background="@color/dark"
-            android:layout_width="0sp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
         <ImageButton
             android:id="@+id/Navigation_IMGBTN_up"
-            android:layout_margin="3sp"
+            android:layout_margin="3dp"
             android:src="@drawable/arrow_forward_icon"
             android:background="@color/dark"
             android:scaleType="fitCenter"
-            android:layout_width="0sp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3" />
         <ImageButton
             android:id="@+id/Navigation_IMGBTN_right"
-            android:layout_margin="3sp"
+            android:layout_margin="3dp"
             android:src="@drawable/rotate_right_icon"
             android:background="@color/dark"
-            android:layout_width="0sp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
     </LinearLayout>

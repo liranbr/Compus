@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/light"
-        android:layout_margin="10sp"
+        android:layout_margin="10dp"
         android:orientation="vertical">
 
         <com.google.android.material.button.MaterialButtonToggleGroup
@@ -34,45 +34,45 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/directionsMode"
                 android:layout_height="match_parent"
-                android:insetTop="0sp"
-                android:insetBottom="0sp"
-                android:layout_width="0sp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_width="0dp"
                 android:layout_weight="1"
                 android:text="Directions"
                 android:textColor="@color/selectable_text"
                 android:backgroundTint="@color/selectable_background"
-                app:strokeWidth="0sp"
-                app:cornerRadius="0sp"
+                app:strokeWidth="0dp"
+                app:cornerRadius="0dp"
                 style="?attr/materialButtonOutlinedStyle" />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/lookaroundMode"
                 android:layout_height="match_parent"
-                android:insetTop="0sp"
-                android:insetBottom="0sp"
-                android:layout_width="0sp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_width="0dp"
                 android:layout_weight="1"
                 android:text="Look Around"
                 android:textColor="@color/selectable_text"
                 android:backgroundTint="@color/selectable_background"
-                app:strokeWidth="0sp"
-                app:cornerRadius="0sp"
+                app:strokeWidth="0dp"
+                app:cornerRadius="0dp"
                 style="?attr/materialButtonOutlinedStyle" />
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingHorizontal="30sp"
-            android:paddingVertical="30sp"
+            android:paddingHorizontal="30dp"
+            android:paddingVertical="30dp"
             android:orientation="vertical">
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingBottom="5sp"
+                android:paddingBottom="5dp"
                 android:text="Look where in [Placeholder]?"
                 android:textColor="@color/dark"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout"
@@ -84,8 +84,8 @@
                 app:expandedHintEnabled="false"
                 app:hintAnimationEnabled="false"
                 android:autofillHints="creditCardNumber"
-                app:boxStrokeWidth="0sp"
-                app:boxStrokeWidthFocused="0sp"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
                 app:endIconMode="clear_text">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -114,11 +114,11 @@
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="30sp"
-                android:paddingBottom="5sp"
+                android:paddingTop="30dp"
+                android:paddingBottom="5dp"
                 android:text="Are you currently at [PlaceHolder]?"
                 android:textColor="@color/dark"
-                android:textSize="20sp"
+                android:textSize="20dp"
                 android:enabled="false" />
 
             <LinearLayout
@@ -131,27 +131,27 @@
                     android:id="@+id/reach_place"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="68sp"
-                    android:layout_marginEnd="10sp"
+                    android:layout_height="68dp"
+                    android:layout_marginEnd="10dp"
                     android:padding="0dp"
                     android:enabled="false"
                     android:text="No,\nget me there!"
-                    app:cornerRadius="10sp"
+                    app:cornerRadius="10dp"
                     app:strokeColor="@color/dark"
-                    app:strokeWidth="1sp" />
+                    app:strokeWidth="1dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/im_at_place"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="68sp"
-                    android:layout_marginStart="10sp"
+                    android:layout_height="68dp"
+                    android:layout_marginStart="10dp"
                     android:padding="0dp"
                     android:enabled="false"
                     android:text="Yes,\nwhat now?"
-                    app:cornerRadius="10sp"
+                    app:cornerRadius="10dp"
                     app:strokeColor="@color/dark"
-                    app:strokeWidth="1sp" />
+                    app:strokeWidth="1dp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
