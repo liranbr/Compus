@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/outlined_screen"
+    android:id="@+id/Arrival_CLO_screen"
+    android:paddingBottom="50sp"
+    android:paddingTop="10sp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center_horizontal"
+        android:paddingTop="30sp"
+        android:paddingBottom="40sp"
+        android:layout_marginHorizontal="10sp"
+        android:background="@color/medium"
+        android:id="@+id/Arrival_LLO_top">
+
+        <TextView
+            android:id="@+id/Arrival_TXT_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Place"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/Arrival_BOX_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/filled_text_box"
+            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:text="Afeka College PlaceHolder"
+            android:textSize="18sp"
+            android:textColor="@color/med_darker" />
+    </LinearLayout>
+
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="6"
+        app:layout_constraintBottom_toTopOf="@+id/Arrival_BTN_next"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Arrival_LLO_top">
+
+        <ImageButton
+            android:id="@+id/Arrival_IMG_waze"
+            android:layout_width="68sp"
+            android:layout_height="68sp"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_marginTop="20sp"
+            android:layout_marginBottom="20sp"
+            android:layout_marginRight="20sp"
+            android:background="@drawable/outlined_button"
+            android:padding="11sp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/waze_logo"/>
+        <TextView
+            android:id="@+id/Arrival_TXT_waze"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:layout_marginTop="20sp"
+            android:text="Waze\nTo arrive by driving or carpooling"
+            android:textColor="@color/dark" />
+
+        <ImageButton
+            android:id="@+id/Arrival_IMG_moovit"
+            android:layout_width="68sp"
+            android:layout_height="68sp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:layout_marginTop="20sp"
+            android:layout_marginBottom="20sp"
+            android:layout_marginRight="20sp"
+            android:background="@drawable/outlined_button"
+            android:padding="11sp"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/moovit_logo" />
+        <TextView
+            android:id="@+id/Arrival_TXT_moovit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:layout_marginTop="20sp"
+            android:text="Moovit\nTo arrive by public transportation,\nbiking, or walking"
+            android:textColor="@color/dark" />
+
+        <ImageButton
+            android:id="@+id/Arrival_IMG_google_maps"
+            android:layout_width="68sp"
+            android:layout_height="68sp"
+            android:layout_row="2"
+            android:layout_column="0"
+            android:layout_marginTop="20sp"
+            android:layout_marginBottom="20sp"
+            android:layout_marginRight="20sp"
+            android:background="@drawable/outlined_button"
+            android:padding="11sp"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/googlemaps_logo" />
+        <TextView
+            android:id="@+id/Arrival_TXT_google_maps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="2"
+            android:layout_column="1"
+            android:layout_marginTop="20sp"
+            android:text="Google Maps\nTo arrive by any means necessary"
+            android:textColor="@color/dark" />
+    </GridLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/Arrival_BTN_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="I'm here, Where Next?"
+        app:cornerRadius="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:strokeColor="@color/dark"
+        app:strokeWidth="1sp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

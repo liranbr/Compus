@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "162751786574",
+    "project_id": "navigate-a1e16",
+    "storage_bucket": "navigate-a1e16.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162751786574:android:c9eb6f2a779f797bf61d1f",
+        "android_client_info": {
+          "package_name": "com.afeka.compus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "162751786574-fp2kcojo7hcmbvcma0qi3bgk6p6n241p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUUhBzlKMoteh3OfX8KXSRfK6po3xITPM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "162751786574-fp2kcojo7hcmbvcma0qi3bgk6p6n241p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

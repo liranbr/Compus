@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/medium"
+    android:orientation="vertical"
+    tools:ignore="ContentDescription" >
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/compus_background" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/light"
+        android:layout_margin="10sp"
+        android:orientation="vertical">
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            app:checkedButton="@id/lookaroundMode">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/directionsMode"
+                android:layout_height="match_parent"
+                android:insetTop="0sp"
+                android:insetBottom="0sp"
+                android:layout_width="0sp"
+                android:layout_weight="1"
+                android:text="Directions"
+                android:textColor="@color/selectable_text"
+                android:backgroundTint="@color/selectable_background"
+                app:strokeWidth="0sp"
+                app:cornerRadius="0sp"
+                style="?attr/materialButtonOutlinedStyle" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/lookaroundMode"
+                android:layout_height="match_parent"
+                android:insetTop="0sp"
+                android:insetBottom="0sp"
+                android:layout_width="0sp"
+                android:layout_weight="1"
+                android:text="Look Around"
+                android:textColor="@color/selectable_text"
+                android:backgroundTint="@color/selectable_background"
+                app:strokeWidth="0sp"
+                app:cornerRadius="0sp"
+                style="?attr/materialButtonOutlinedStyle" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="30sp"
+            android:paddingVertical="30sp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5sp"
+                android:text="Look where in [Placeholder]?"
+                android:textColor="@color/dark"
+                android:textSize="20sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/outlined_input_box"
+                android:paddingHorizontal="16dp"
+                android:hint=" "
+                app:expandedHintEnabled="false"
+                app:hintAnimationEnabled="false"
+                android:autofillHints="creditCardNumber"
+                app:boxStrokeWidth="0sp"
+                app:boxStrokeWidthFocused="0sp"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/TXT_ACV_Search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="51dp"
+                    android:backgroundTint="@android:color/transparent"
+                    android:hint="Enter your destination"
+                    android:inputType="text"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <CheckBox
+                android:id="@+id/a11y_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="0dp"
+                android:text="Wheelchair accessibility"
+                android:visibility="invisible"
+                android:textColor="@color/dark" />
+
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="30sp"
+                android:paddingBottom="5sp"
+                android:text="Are you currently at [PlaceHolder]?"
+                android:textColor="@color/dark"
+                android:textSize="20sp"
+                android:enabled="false" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/reach_place"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="68sp"
+                    android:layout_marginEnd="10sp"
+                    android:padding="0dp"
+                    android:enabled="false"
+                    android:text="No,\nget me there!"
+                    app:cornerRadius="10sp"
+                    app:strokeColor="@color/dark"
+                    app:strokeWidth="1sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/im_at_place"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="68sp"
+                    android:layout_marginStart="10sp"
+                    android:padding="0dp"
+                    android:enabled="false"
+                    android:text="Yes,\nwhat now?"
+                    app:cornerRadius="10sp"
+                    app:strokeColor="@color/dark"
+                    app:strokeWidth="1sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

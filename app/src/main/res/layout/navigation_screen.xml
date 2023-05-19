@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".NavigationActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/medium"
+    android:orientation="vertical"
+    android:id="@+id/Navigation_LLO_screen"
+    tools:ignore="ContentDescription">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3">
+        <ViewFlipper
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/Navigation_VF_Indoor"
+            android:background="@color/medium"
+            android:gravity="center_vertical"
+            android:inAnimation="@android:anim/slide_in_left">
+            <ImageView
+                android:id="@+id/Navigation_IMG_Indoor_up"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/compus_background"
+                android:layout_gravity="center_vertical"
+                android:adjustViewBounds="true" />
+            <ImageView
+                android:id="@+id/Navigation_IMG_Indoor_right"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/compus_background"
+                android:layout_gravity="center_vertical"
+                android:adjustViewBounds="true" />
+            <ImageView
+                android:id="@+id/Navigation_IMG_Indoor_down"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/compus_background"
+                android:layout_gravity="center_vertical"
+                android:adjustViewBounds="true" />
+            <ImageView
+                android:id="@+id/Navigation_IMG_Indoor_left"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/compus_background"
+                android:layout_gravity="center_vertical"
+                android:adjustViewBounds="true" />
+
+        </ViewFlipper>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/Navigation_FAB_report"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/dark"
+            android:src="@drawable/report_icon"
+            android:foreground="@drawable/report_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4">
+
+        <ImageView
+            android:id="@+id/Navigation_IMG_Floor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/Navigation_MBTG_navigation"
+            android:layout_width="50sp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:singleSelection="true"
+            app:selectionRequired="true">
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <ImageButton
+            android:id="@+id/Navigation_IMGBTN_back"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
+            android:background="@color/dark"
+            android:src="@drawable/undo_arrow_icon"
+            android:padding="5sp"
+            android:layout_margin="3sp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:background="@color/med_dark"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/Navigation_IMGBTN_left"
+            android:layout_margin="3sp"
+            android:src="@drawable/rotate_left_icon"
+            android:background="@color/dark"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        <ImageButton
+            android:id="@+id/Navigation_IMGBTN_up"
+            android:layout_margin="3sp"
+            android:src="@drawable/arrow_forward_icon"
+            android:background="@color/dark"
+            android:scaleType="fitCenter"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="3" />
+        <ImageButton
+            android:id="@+id/Navigation_IMGBTN_right"
+            android:layout_margin="3sp"
+            android:src="@drawable/rotate_right_icon"
+            android:background="@color/dark"
+            android:layout_width="0sp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+    </LinearLayout>
+</LinearLayout>
