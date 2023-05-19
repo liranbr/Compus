@@ -48,6 +48,7 @@ class NavigationActivity : AppCompatActivity() {
     private var shortestPath :List<String> ?= null
     private val previousWaypoints = Stack<String>()
     private val waypointImages = HashMap<String, Bitmap>()
+    private var haveReachedDestination = false
     private var site: Site? = null
     private var graph: Graph? = null
 
@@ -147,6 +148,7 @@ class NavigationActivity : AppCompatActivity() {
 
     private fun getCurrentStep() {
         if (!isNavigation) return
+        if (haveReachedDestination) return
         if (forwardBtn.isEnabled)
             colorButton(forwardBtn, R.color.dark)
         colorButtons(arrayOf(leftBtn, rightBtn, backBtn), R.color.dark)
@@ -160,6 +162,7 @@ class NavigationActivity : AppCompatActivity() {
                 // TODO: Improve clarity of having reached destination
                 colorButtons(arrayOf(leftBtn, forwardBtn, rightBtn, backBtn), R.color.green_500)
                 odedAmar("You have reached your destination.")
+                haveReachedDestination = true
             }
             else -> { // still en route
                 when (shortestPathDirections[index]) {
@@ -263,7 +266,10 @@ class NavigationActivity : AppCompatActivity() {
     }
 
     // oded amer learim yadaim
-    private fun odedAmar(text: String) = oded.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+    private fun odedAmar(text: String) {
+        if (!haveReachedDestination)
+            oded.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+    }
 
     private fun colorButton(imageButton: ImageButton, @ColorRes id: Int) = imageButton.setBackgroundColor(ContextCompat.getColor(this, id))
 
