@@ -61,8 +61,8 @@ class ServerManager {
         return if (response.isSuccessful) (response as Response<Site>).body() else null
     }
 
-    fun getShortestPath(siteName: String, poiStart: String, poiEnd: String, a11y: String = "WALK"): List<Waypoint>? {
-        val call = service.getShortestPath(siteName, poiStart, poiEnd, a11y)
+    fun getShortestPath(siteName: String, wpIdSrc: String, wpIdDst: String, a11y: String = "WALK"): List<Waypoint>? {
+        val call = service.getShortestPath(siteName, wpIdSrc, wpIdDst, a11y)
         println(call.request().url())
         val response = execute(call)
         return if (response.isSuccessful) (response as Response<List<Waypoint>>).body() else null
@@ -87,7 +87,7 @@ class ServerManager {
     fun testGetters() {
         val call1 = service.getSite("Afeka")
         val call2 = service.getSiteImageURLs("Afeka")
-        val call3 = service.getShortestPath("Afeka", "Gate", "Reception", "WALK")
+        val call3 = service.getShortestPath("Afeka", "location-entrance", "crossroad", "WALK")
         for (call in listOf(call1, call2, call3)) {
             val response = call.execute()
             println(

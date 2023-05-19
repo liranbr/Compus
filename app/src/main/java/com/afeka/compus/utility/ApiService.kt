@@ -16,8 +16,8 @@ interface ApiService {
     @GET("shortest_path")
     fun getShortestPath(
         @Query("site_name") siteName: String,
-        @Query("poi_start") poiStart: String,
-        @Query("poi_end") poiEnd: String,
+        @Query("wp_id_src") wpIdSrc: String,
+        @Query("wp_id_dst") wpIdDst: String,
         @Query("a11y") a11y: String = "WALK"
     ): Call<List<Waypoint>>
 

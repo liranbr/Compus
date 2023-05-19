@@ -46,6 +46,7 @@ class NavigationActivity : AppCompatActivity() {
     private lateinit var currArea: Area
     private lateinit var currPlace: Place
     private var destPOI = ""
+    private var startWpId = ""
     private var destWpId = ""
     private val directions = arrayOf("up", "right", "down", "left") // TODO: Need?
     private var shortPathDirections = IntArray(0)
@@ -71,7 +72,8 @@ class NavigationActivity : AppCompatActivity() {
                     isNavigation = true
                 }
             }
-            currWpId = graph!!.getPoiWps()[startPointPOI] ?: ""
+            startWpId = graph!!.getPoiWps()[startPointPOI] ?: ""
+            currWpId = startWpId
             destWpId = graph!!.getPoiWps()[destPOI] ?: ""
         }
 
@@ -120,7 +122,7 @@ class NavigationActivity : AppCompatActivity() {
     }
     private fun makeShortestPath() {
         shortPathWpIds = MainActivity.sm.getShortestPath( site!!.getSiteName(),
-            startPointPOI, destPOI, MainActivity.a11yMode)?.map { it.getId() } ?: return
+            startWpId, destWpId, MainActivity.a11yMode)?.map { it.getId() } ?: return
         val neighbours = MainActivity.graph!!.getWpNeighs()
         shortPathDirections = IntArray(shortPathWpIds!!.size - 1)
         for (i in 0 until shortPathWpIds!!.size - 1) {
