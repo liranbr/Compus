@@ -27,7 +27,6 @@ class ReportActivity : AppCompatActivity() {
     private lateinit var wpId: String
     private lateinit var file: File
     private lateinit var newPhoto: ImageView
-    private lateinit var email: TextView
     private lateinit var description: EditText
     private lateinit var submit: Button
     private var direction: Int = 0
@@ -53,7 +52,6 @@ class ReportActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        email.text = "test@email.com" // TODO: Allow input with email regex
         setSubmitListener()
     }
 
@@ -61,7 +59,6 @@ class ReportActivity : AppCompatActivity() {
         currentPhoto = findViewById(R.id.report_menu_IMG_cur)
         newPhoto = findViewById(R.id.report_menu_IMG_new)
         submit = findViewById(R.id.report_menu_BTN_submit)
-        email = findViewById(R.id.report_menu_TV_email)
         description = findViewById(R.id.report_menu_ET_reason)
     }
 
@@ -69,7 +66,6 @@ class ReportActivity : AppCompatActivity() {
         val submitListener = View.OnClickListener {
             val rep = Report(
                 reportId = "", // server generates uuid when uploading
-                reporterEmail = email.text.toString(),
                 text = description.text.toString(),
                 wpId = wpId,
                 direction = direction,
@@ -84,7 +80,13 @@ class ReportActivity : AppCompatActivity() {
                 ).show()
                 return@OnClickListener
             }
-            MainActivity.sm.uploadReport(rep, file)
+            val result = MainActivity.sm.uploadReport(rep, file)
+            val text = if (result) "Report uploaded successfully" else "Error uploading report"
+            Toast.makeText(
+                this,
+                text,
+                Toast.LENGTH_SHORT
+            ).show()
             finish()
         }
         submit.setOnClickListener(submitListener)

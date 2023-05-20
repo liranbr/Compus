@@ -29,7 +29,6 @@ interface ApiService {
     @Multipart
     @POST("upload_report")
     fun uploadReport(
-        @Part("reporter_email") reporterEmail: String,
         @Part("description") description: String,
         @Part("wp_id") wpId: String,
         @Part("direction") direction: Int,

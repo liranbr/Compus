@@ -39,33 +39,17 @@
         android:layout_marginVertical="5dp"
         android:src="@drawable/camera" />
 
-    <LinearLayout
+    <EditText
+        android:id="@+id/report_menu_ET_reason"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/report_menu_TV_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="17dp"
-            android:background="@color/light"
-            android:layout_marginVertical="5dp"
-            android:hint="Email:"/>
-
-        <EditText
-            android:id="@+id/report_menu_ET_reason"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/light"
-            android:layout_marginVertical="5dp"
-            android:hint="Enter description"
-            android:imeOptions="actionDone"
-            android:inputType="textCapSentences|textMultiLine"
-            android:gravity="top" />
-
-    </LinearLayout>
+        android:layout_height="0dp"
+        android:background="@color/light"
+        android:layout_marginVertical="5dp"
+        android:hint="Enter description"
+        android:imeOptions="actionDone"
+        android:inputType="textCapSentences|textMultiLine"
+        android:gravity="top" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/report_menu_BTN_submit"

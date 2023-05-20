@@ -79,7 +79,7 @@ class ServerManager {
         val imageRB = RequestBody.create(
             MediaType.parse("image/jpeg"), file)
         val image = MultipartBody.Part.createFormData("image", file.name, imageRB)
-        val response = service.uploadReport(report.getReporterEmail(), report.getText(),
+        val response = service.uploadReport(report.getText(),
             report.getWpId(), report.getDirection(), report.getSiteName(), image).execute()
         return response.isSuccessful
     }
@@ -104,7 +104,7 @@ class ServerManager {
             File("D:\\Folders\\Development\\Repositories\\Compus versions\\test.jpg")
         )
         val image = MultipartBody.Part.createFormData("image", "test.jpg", imageRB)
-        val call = service.uploadReport("tester@gmail.com", "description", "304", 0, "Afeka", image)
+        val call = service.uploadReport("description", "304", 0, "Afeka", image)
         println(call.request().url())
         val response = call.execute()
         println(if (response.isSuccessful) response.body()
