@@ -1,6 +1,7 @@
 package com.afeka.compus
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
@@ -17,6 +18,9 @@ import com.afeka.compus.utility.AutoSuggestAdapter
 import com.afeka.compus.utility.ServerManager
 import com.afeka.compus.utility.UtilityMethods.Companion.switchActivityWithData
 import com.afeka.compus.utility.UtilityMethods.Companion.closeKeyboard
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.FirebaseApp
@@ -43,8 +47,8 @@ class MainActivity : AppCompatActivity() {
         var site : Site? = null
         var graph: Graph? = null
         var POIsWPs: Map<String, String>? = null
-        var imageURLs : Map<String, String>? = null
-        var imageBitmaps : Map<String, Bitmap>? = null // TODO: Continue here
+        var imageURLs : Map<String, String>? = null // TODO: remove ? and initialize
+        var imageBitmaps = HashMap<String, Bitmap>()
         var sm = ServerManager()
         var a11yMode = "WALK"
     }
@@ -70,8 +74,9 @@ class MainActivity : AppCompatActivity() {
                 ", " + it.key to it.value }.toMap() // 'Class 304' -> 'Ficus, Class 304'
         autoCompleteTV.setAdapter(AutoSuggestAdapter(this, android.R.layout.simple_list_item_1, POIsWPs!!.keys.toList()))
         autoCompleteTV.threshold = 1
-        imageURLs = sm.getSiteImageURLs(siteName)
         modeChoiceTG.check(R.id.directionsMode)
+        imageURLs = sm.getSiteImageURLs(siteName)
+        downloadImages()
     }
 
     // function to show/hide and enable/disable buttons
@@ -82,6 +87,17 @@ class MainActivity : AppCompatActivity() {
         amAtSiteBTN.isEnabled = enabled
         amAtSiteBTN.visibility = visibility
         startPointChoiceText.text = if (enabled) "Are you currently at ${site!!.getSiteName()}?" else ""
+    }
+
+    private fun downloadImages() {
+        imageURLs!!.forEach { entry ->
+            Glide.with(this).asBitmap().load(entry.value).placeholder(R.drawable.compus_logo).into(object: CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    imageBitmaps!![entry.key] = resource
+                }
+                override fun onLoadCleared(placeholder: Drawable?) {} // TODO: Remove?
+            })
+        }
     }
 
     private fun setListeners() {

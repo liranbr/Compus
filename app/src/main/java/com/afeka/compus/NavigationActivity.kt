@@ -48,11 +48,11 @@ class NavigationActivity : AppCompatActivity() {
     private var destPOI = ""
     private var startWpId = ""
     private var destWpId = ""
+    private var wpImages: HashMap<String, Bitmap> = MainActivity.imageBitmaps!!
     private val directions = arrayOf("up", "right", "down", "left") // TODO: Need?
     private var shortPathDirections = IntArray(0)
     private var shortPathWpIds: List<String> ?= null
     private val prevWps = Stack<String>()
-    private val wpImages = HashMap<String, Bitmap>()
     private var reachedDest = false
     private var site: Site? = null
     private var graph: Graph? = null
@@ -78,6 +78,7 @@ class NavigationActivity : AppCompatActivity() {
         }
 
         // Download panorama images for all wps, load relevant ones into the image carousel TODO: implement download in MainActivity
+        /*
         MainActivity.imageURLs!!.forEach { entry ->
             Glide.with(this).asBitmap().load(entry.value).into(object: CustomTarget<Bitmap>() {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
@@ -90,7 +91,11 @@ class NavigationActivity : AppCompatActivity() {
                 }
                 override fun onLoadCleared(placeholder: Drawable?) {}
             })
-        }
+        } */
+        // put an image in each carousel view, from wpImages from mainActivity
+        carouselViews.forEachIndexed { i, imageView ->
+            imageView.setImageBitmap(wpImages["${currWpId}-${directions[i]}"])
+        } // TODO: what if not all loaded yet
 
         if (isNavigation) {
             makeShortestPath()
