@@ -11,14 +11,11 @@ import androidx.core.content.ContextCompat
 import com.afeka.compus.objects.Graph
 import com.afeka.compus.objects.Site
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.transition.Transition
-import android.graphics.drawable.Drawable
 import androidx.annotation.ColorRes
 import androidx.core.view.children
 import com.afeka.compus.objects.Area
 import com.afeka.compus.objects.Place
 import com.afeka.compus.utility.UtilityMethods
-import com.bumptech.glide.request.target.CustomTarget
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -76,26 +73,10 @@ class NavigationActivity : AppCompatActivity() {
             currWpId = startWpId
             destWpId = graph!!.getPoiWps()[destPOI] ?: ""
         }
-
-        // Download panorama images for all wps, load relevant ones into the image carousel TODO: implement download in MainActivity
-        /*
-        MainActivity.imageURLs!!.forEach { entry ->
-            Glide.with(this).asBitmap().load(entry.value).into(object: CustomTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    wpImages[entry.key] = resource
-                    val innerImageNameParts = entry.key.split("-".toRegex()).toTypedArray()
-                    val imageDirection = innerImageNameParts[innerImageNameParts.size - 1]
-                    if (entry.key.contains(currWpId)) {
-                        carouselViews[directions.indexOf(imageDirection)].setImageBitmap(resource)
-                    }
-                }
-                override fun onLoadCleared(placeholder: Drawable?) {}
-            })
-        } */
         // put an image in each carousel view, from wpImages from mainActivity
         carouselViews.forEachIndexed { i, imageView ->
-            imageView.setImageBitmap(wpImages["${currWpId}-${directions[i]}"])
-        } // TODO: what if not all loaded yet
+            imageIntoView("${currWpId}-${directions[i]}", imageView)
+        }
 
         if (isNavigation) {
             makeShortestPath()
@@ -118,10 +99,8 @@ class NavigationActivity : AppCompatActivity() {
         toggleGroup.removeAllViews()
         areaNames.forEach { toggleGroup.addView(MaterialButton(this).apply { text = it }) }
         for (i in areaNames.indices) {
-            val areaName = areaNames[i]
-            val url = MainActivity.imageURLs!!["area_map_$areaName"]
             toggleGroup.getChildAt(i).setOnClickListener {
-                Glide.with(this).load(url).placeholder(R.drawable.compus_logo).into(areaMapView)
+                imageIntoView("area_map_${areaNames[i]}", areaMapView)
             }
         }
     }
@@ -220,8 +199,7 @@ class NavigationActivity : AppCompatActivity() {
                 ?: return@setOnClickListener
             for (i in directions.indices) {
                 val imageName = nextVertex + "-" + directions[i]
-                if (wpImages.containsKey(imageName))
-                    carouselViews[i].setImageBitmap(wpImages[imageName])
+                imageIntoView(imageName, carouselViews[i])
             }
             prevWps.add(currWpId)
             currWpId = nextVertex
@@ -231,11 +209,8 @@ class NavigationActivity : AppCompatActivity() {
             // Move to the previous waypoint according to the stack // TODO: grey-out if stack is empty
             if (prevWps.size <= 0) return@setOnClickListener
             val previousVertex = prevWps.peek()
-            for (i in directions.indices) {
-                val imageName = previousVertex + "-" + directions[i]
-                if (wpImages.containsKey(imageName))
-                    carouselViews[i].setImageBitmap(wpImages[imageName])
-            }
+            for (i in directions.indices)
+                imageIntoView(previousVertex + "-" + directions[i], carouselViews[i])
             currWpId = prevWps.pop()
             updateStatus()
         }
@@ -244,6 +219,14 @@ class NavigationActivity : AppCompatActivity() {
             UtilityMethods.switchActivityWithData(this, ReportActivity::class.java,
                 currentImageURL!!, currWpId, currDirection.toString())
         }
+    }
+
+    private fun imageIntoView(imageName: String, imageView: ImageView) {
+        if (wpImages.containsKey(imageName))
+            imageView.setImageBitmap(wpImages[imageName])
+        else
+            Glide.with(this).load(MainActivity.imageURLs!![imageName]).placeholder(R.drawable.compus_background).into(imageView)
+        // TODO: replace Placeholder with a loading animation?
     }
 
     private fun rotateImage(direction: Int) {
