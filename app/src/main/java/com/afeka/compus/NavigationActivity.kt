@@ -1,5 +1,6 @@
 package com.afeka.compus
 
+import android.animation.Animator
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
@@ -11,11 +12,13 @@ import androidx.core.content.ContextCompat
 import com.afeka.compus.objects.Graph
 import com.afeka.compus.objects.Site
 import com.bumptech.glide.Glide
+import android.view.View
 import androidx.annotation.ColorRes
 import androidx.core.view.children
 import com.afeka.compus.objects.Area
 import com.afeka.compus.objects.Place
 import com.afeka.compus.utility.UtilityMethods
+import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -35,6 +38,7 @@ class NavigationActivity : AppCompatActivity() {
     private lateinit var rightBtn: ImageButton
     private lateinit var reportBTN: FloatingActionButton
     private lateinit var toggleGroup: MaterialButtonToggleGroup
+    private lateinit var lottie: LottieAnimationView
 
     private var isNavigation = false
     private var currDirection = 0 // 0 = up, 1 = right, 2 = down, 3 = left
@@ -72,6 +76,22 @@ class NavigationActivity : AppCompatActivity() {
             startWpId = graph!!.getPoiWps()[startPointPOI] ?: ""
             currWpId = startWpId
             destWpId = graph!!.getPoiWps()[destPOI] ?: ""
+
+            lottie.addAnimatorListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {
+                    lottie.visibility = View.VISIBLE
+                }
+                override fun onAnimationEnd(animation: Animator) {
+                    lottie.visibility = View.GONE
+                }
+
+                override fun onAnimationCancel(animation: Animator) {
+                }
+
+                override fun onAnimationRepeat(animation: Animator) {
+                }
+            })
+
         }
         // put an image in each carousel view, from wpImages from mainActivity
         carouselViews.forEachIndexed { i, imageView ->
@@ -128,6 +148,7 @@ class NavigationActivity : AppCompatActivity() {
             findViewById(R.id.Navigation_IMG_Indoor_down),
             findViewById(R.id.Navigation_IMG_Indoor_left))
         viewFlipper = findViewById(R.id.Navigation_VF_Indoor)
+        lottie = findViewById(R.id.Lottie)
     }
 
     private fun getCurrentStep() {
@@ -146,6 +167,8 @@ class NavigationActivity : AppCompatActivity() {
                 colorButtons(arrayOf(leftBtn, forwardBtn, rightBtn, backBtn), R.color.green_500)
                 odedAmar("You have reached your destination.")
                 reachedDest = true
+                lottie.animate().translationX(2000F).setDuration(2000).startDelay = 2900
+                lottie.playAnimation()
             }
             else -> { // still en route
                 when (shortPathDirections[index]) {
@@ -164,6 +187,8 @@ class NavigationActivity : AppCompatActivity() {
             }
         }
     }
+
+
 
     private fun updateStatus() {
         // Update the place, and area buttons

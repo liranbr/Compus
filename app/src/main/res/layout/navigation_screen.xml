@@ -21,13 +21,15 @@
             android:background="@color/medium"
             android:gravity="center_vertical"
             android:inAnimation="@android:anim/slide_in_left">
+
             <ImageView
                 android:id="@+id/Navigation_IMG_Indoor_up"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/compus_background"
                 android:layout_gravity="center_vertical"
-                android:adjustViewBounds="true" />
+                android:adjustViewBounds="true"
+                android:src="@drawable/compus_background" />
+
             <ImageView
                 android:id="@+id/Navigation_IMG_Indoor_right"
                 android:layout_width="match_parent"
@@ -89,6 +91,16 @@
             app:singleSelection="true"
             app:selectionRequired="true">
         </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_width="400dp"
+            android:layout_height="400dp"
+            android:layout_centerInParent= "true"
+            app:lottie_autoPlay="false"
+            android:id="@+id/Lottie"
+            android:elevation="5dp"
+            app:lottie_rawRes="@raw/destination"
+            tools:ignore="MissingConstraints" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/Navigation_IMGBTN_back"
