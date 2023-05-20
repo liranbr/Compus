@@ -59,6 +59,7 @@
             android:backgroundTint="@color/dark"
             android:src="@drawable/report_icon"
             android:foreground="@drawable/report_icon"
+            android:layout_margin="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -89,15 +90,13 @@
             app:selectionRequired="true">
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
-        <ImageButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/Navigation_IMGBTN_back"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@color/dark"
-            android:src="@drawable/undo_arrow_icon"
-            android:padding="5dp"
-            android:layout_margin="3dp"
-            android:adjustViewBounds="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/dark"
+            android:foreground="@drawable/undo_arrow_icon"
+            android:layout_margin="8dp"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -113,7 +112,7 @@
 
         <ImageButton
             android:id="@+id/Navigation_IMGBTN_left"
-            android:layout_margin="3dp"
+            android:layout_margin="5dp"
             android:src="@drawable/rotate_left_icon"
             android:background="@color/dark"
             android:layout_width="0dp"
@@ -121,7 +120,7 @@
             android:layout_weight="1" />
         <ImageButton
             android:id="@+id/Navigation_IMGBTN_up"
-            android:layout_margin="3dp"
+            android:layout_marginVertical="5dp"
             android:src="@drawable/arrow_forward_icon"
             android:background="@color/dark"
             android:scaleType="fitCenter"
@@ -130,7 +129,7 @@
             android:layout_weight="3" />
         <ImageButton
             android:id="@+id/Navigation_IMGBTN_right"
-            android:layout_margin="3dp"
+            android:layout_margin="5dp"
             android:src="@drawable/rotate_right_icon"
             android:background="@color/dark"
             android:layout_width="0dp"
