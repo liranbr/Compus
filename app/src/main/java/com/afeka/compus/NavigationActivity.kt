@@ -1,6 +1,7 @@
 package com.afeka.compus
 
 import android.animation.Animator
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
@@ -14,6 +15,7 @@ import com.afeka.compus.objects.Site
 import com.bumptech.glide.Glide
 import android.view.View
 import androidx.annotation.ColorRes
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.core.view.children
 import com.afeka.compus.objects.Area
 import com.afeka.compus.objects.Place
@@ -84,12 +86,8 @@ class NavigationActivity : AppCompatActivity() {
                 override fun onAnimationEnd(animation: Animator) {
                     lottie.visibility = View.GONE
                 }
-
-                override fun onAnimationCancel(animation: Animator) {
-                }
-
-                override fun onAnimationRepeat(animation: Animator) {
-                }
+                override fun onAnimationCancel(animation: Animator) {}
+                override fun onAnimationRepeat(animation: Animator) {}
             })
 
         }
@@ -107,6 +105,7 @@ class NavigationActivity : AppCompatActivity() {
                 }
             }
         }
+        colorButtons(arrayOf(leftBtn, forwardBtn, rightBtn, backBtn), R.color.dark)
         updatePlace()
         updateStatus()
         setListeners()
@@ -153,22 +152,21 @@ class NavigationActivity : AppCompatActivity() {
 
     private fun getCurrentStep() {
         if (!isNavigation) return
-        if (reachedDest) return
         if (forwardBtn.isEnabled)
             colorButton(forwardBtn, R.color.dark)
-        colorButtons(arrayOf(leftBtn, rightBtn, backBtn), R.color.dark)
+        colorButtons(arrayOf(leftBtn, rightBtn), R.color.dark) // TODO: Improve code
         when (val index = shortPathWpIds!!.indexOf(currWpId)) {
             -1 -> {
                 colorButton(backBtn, R.color.green_500)
                 odedAmar("Turn back.")
             }
             shortPathWpIds!!.size - 1 -> {
-                // TODO: Improve clarity of having reached destination
                 colorButtons(arrayOf(leftBtn, forwardBtn, rightBtn, backBtn), R.color.green_500)
                 odedAmar("You have reached your destination.")
-                reachedDest = true
                 lottie.animate().translationX(2000F).setDuration(2000).startDelay = 2900
-                lottie.playAnimation()
+                if (!reachedDest) // to only play once
+                    lottie.playAnimation()
+                reachedDest = true
             }
             else -> { // still en route
                 when (shortPathDirections[index]) {
@@ -188,12 +186,11 @@ class NavigationActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun updateStatus() {
         // Update the place, and area buttons
         if (graph!!.getWps()[currWpId]!!.getPlaceId() != currPlace.getPlaceName())
             updatePlace()
+
         // Update the area map
         val currentAreaId = graph!!.getWps()[currWpId]!!.getAreaId()
         toggleGroup.children.filterIsInstance<MaterialButton>()
@@ -201,11 +198,17 @@ class NavigationActivity : AppCompatActivity() {
 
         // Check if possible to move forward
         val canMoveForward = graph!!.getWpNeighs()[currWpId]!![currDirection] != ""
-        val color = if (canMoveForward) R.color.dark else R.color.med_dark
-        forwardBtn.setBackgroundColor(ContextCompat.getColor(this, color))
+        var color = if (canMoveForward) R.color.dark else R.color.med_dark
+        colorButton(forwardBtn, color)
         forwardBtn.isEnabled = canMoveForward
 
-        // If in Navigation mode, update the current step
+        // Check if possible to move back
+        val canMoveBack = prevWps.isNotEmpty()
+        color = if (canMoveBack) R.color.dark else R.color.med_dark
+        colorButton(backBtn, color)
+        backBtn.isEnabled = canMoveBack
+
+        // If in Navigation mode, update the current step. Might further set colors, to green etc
         if (isNavigation) getCurrentStep()
     }
 
@@ -289,12 +292,23 @@ class NavigationActivity : AppCompatActivity() {
             oded.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
     }
 
-    private fun colorButton(imageButton: ImageButton, @ColorRes id: Int) = imageButton.setBackgroundColor(ContextCompat.getColor(this, id))
+    private fun colorButton(imageButton: ImageButton, @ColorRes id: Int) {
+        if (imageButton.javaClass == AppCompatImageButton::class.java) {
+            imageButton.setBackgroundColor(ContextCompat.getColor(this, id))
+            println("I'm an ImageButton, my id is: " + imageButton.id)
+        }
+        else {
+            (imageButton as FloatingActionButton).backgroundTintList = ContextCompat.getColorStateList(this, id)
+            imageButton.supportBackgroundTintList = ContextCompat.getColorStateList(this, id)
+            println("I'm a FAB, my id is: " + imageButton.id)
+        }
+    }
 
     // color multiple buttons
     private fun colorButtons(imageButtons: Array<ImageButton>, @ColorRes id: Int) {
-        for (imageButton in imageButtons)
-            imageButton.setBackgroundColor(ContextCompat.getColor(this, id))
+        for (imageButton in imageButtons) {
+            colorButton(imageButton, id)
+        }
     }
 
     private fun placeFromWp(wpId: String): Place {

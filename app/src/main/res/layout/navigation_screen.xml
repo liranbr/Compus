@@ -95,7 +95,7 @@
         <com.airbnb.lottie.LottieAnimationView
             android:layout_width="300dp"
             android:layout_height="300dp"
-            app:lottie_autoPlay="true"
+            app:lottie_autoPlay="false"
             android:id="@+id/Lottie"
             android:elevation="5dp"
             app:layout_constraintRight_toRightOf="parent"
@@ -109,7 +109,6 @@
             android:id="@+id/Navigation_IMGBTN_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/dark"
             android:foreground="@drawable/undo_arrow_icon"
             android:layout_margin="8dp"
             android:scaleType="fitCenter"
