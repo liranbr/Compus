@@ -45,7 +45,7 @@ class ReportActivity : AppCompatActivity() {
         }
 
         Glide.with(this@ReportActivity).load(currentImageURL)
-            .placeholder(R.drawable.compus_logo).into(currentPhoto)
+            .placeholder(R.drawable.load_icon).into(currentPhoto)
 
         setupImagePicker(newPhoto)
     }

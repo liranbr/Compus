@@ -121,7 +121,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
-        android:background="@color/med_dark"
+        android:background="@color/medium"
         android:orientation="horizontal">
 
         <ImageButton

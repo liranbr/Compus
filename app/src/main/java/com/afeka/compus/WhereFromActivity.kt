@@ -57,7 +57,7 @@ class WhereFromActivity : AppCompatActivity(){
             val areaMapName = "area_map_" + graph.getWps()[wpId]?.getAreaId()
             val url = MainActivity.imageURLs!![areaMapName]
 
-            Glide.with(this@WhereFromActivity).load(url).placeholder(R.drawable.compus_logo).into(floorPlan)
+            Glide.with(this@WhereFromActivity).load(url).placeholder(R.drawable.load_icon).into(floorPlan)
         }
 
         startNavBtn.setOnClickListener {

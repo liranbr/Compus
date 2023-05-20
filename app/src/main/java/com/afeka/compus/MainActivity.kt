@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun downloadImages() {
         imageURLs!!.forEach { entry ->
-            Glide.with(this).asBitmap().load(entry.value).placeholder(R.drawable.compus_logo).into(object: CustomTarget<Bitmap>() {
+            Glide.with(this).asBitmap().load(entry.value).placeholder(R.drawable.load_icon).into(object: CustomTarget<Bitmap>() {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     imageBitmaps!![entry.key] = resource
                 }

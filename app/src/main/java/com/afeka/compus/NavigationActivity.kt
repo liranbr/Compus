@@ -253,8 +253,7 @@ class NavigationActivity : AppCompatActivity() {
         if (wpImages.containsKey(imageName))
             imageView.setImageBitmap(wpImages[imageName])
         else
-            Glide.with(this).load(MainActivity.imageURLs!![imageName]).placeholder(R.drawable.compus_background).into(imageView)
-        // TODO: replace Placeholder with a loading animation?
+            Glide.with(this).load(MainActivity.imageURLs!![imageName]).placeholder(R.drawable.load_icon).into(imageView)
     }
 
     private fun rotateImage(direction: Int) {
