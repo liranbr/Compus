@@ -1,9 +1,14 @@
 package com.afeka.compus
 
 import android.animation.Animator
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
+import android.view.MotionEvent
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ViewFlipper
@@ -122,6 +127,8 @@ class NavigationActivity : AppCompatActivity() {
         for (i in areaNames.indices) {
             toggleGroup.getChildAt(i).setOnClickListener {
                 imageIntoView("area_map_${areaNames[i]}", areaMapView)
+                if(areaNames[i] == "F2")
+                    makeLine()
             }
         }
     }
@@ -133,6 +140,57 @@ class NavigationActivity : AppCompatActivity() {
         for (i in 0 until shortPathWpIds!!.size - 1) {
             shortPathDirections[i] = neighbours[shortPathWpIds!![i]]!!.indexOf(shortPathWpIds!![i + 1])
         }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun makeLine() {
+        val bitmap = MainActivity.imageBitmaps["area_map_F2"]
+        val mCanvas = bitmap?.let { Canvas(it) }
+        val mPaint = Paint()
+        mPaint.color = Color.RED
+        mPaint.style = Paint.Style.STROKE
+        mPaint.strokeWidth = 10F
+        mPaint.isAntiAlias = true
+
+// Declaring start and end
+// coordinates on the canvas
+        val ENTRANCE = Pair<Float,Float>(640F,680F)
+        val RECEPTION = Pair<Float,Float>(640F,400F)
+        val HALL_LEFT = Pair<Float,Float>(340F,400F)
+        val STAIRS_UP = Pair<Float,Float>(770F,400F)
+        val HALL_RIGHT = Pair<Float,Float>(1040F,400F)
+        val EXIT = Pair<Float,Float>(90F,400F)
+        val HALL_UP = Pair<Float,Float>(1250F,400F)
+
+        val positions = mutableListOf<Pair<Float, Float>>()
+        positions.add(ENTRANCE)
+        positions.add(RECEPTION)
+        positions.add(HALL_LEFT)
+
+
+// Draw the line
+        for (i in 0 until positions.size - 1) {
+            val startX = positions[i].first
+            val startY = positions[i].second
+            val stopX = positions[i + 1].first
+            val stopY = positions[i + 1].second
+            mCanvas?.drawLine(startX, startY, stopX, stopY, mPaint)
+        }
+        areaMapView.setImageBitmap(bitmap)
+
+
+//        areaMapView.setOnTouchListener { view, event ->
+//            val action = event.action
+//            when (action) {
+//                MotionEvent.ACTION_DOWN -> {
+//                    val x = event.x.toInt()
+//                    val y = event.y.toInt()
+//                    // Display or use the x and y coordinates
+//                    println("Touched at x=$x, y=$y")
+//                }
+//            }
+//            true
+//        }
     }
 
     private fun findViews() {
