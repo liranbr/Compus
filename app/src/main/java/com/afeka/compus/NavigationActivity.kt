@@ -290,8 +290,8 @@ class NavigationActivity : AppCompatActivity() {
                 delayInput(500)
             }
             -1 -> { // rotate left
-                viewFlipper.setInAnimation(this, android.R.anim.slide_in_left)
-                viewFlipper.setOutAnimation(this, android.R.anim.slide_out_right)
+                viewFlipper.setInAnimation(this, R.anim.slide_in_left)
+                viewFlipper.setOutAnimation(this, R.anim.slide_out_right)
                 viewFlipper.showPrevious()
                 delayInput(500)
             }
