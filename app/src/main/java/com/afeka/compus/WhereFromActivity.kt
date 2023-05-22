@@ -41,7 +41,8 @@ class WhereFromActivity : AppCompatActivity(){
         }
 
         whereFromACTV.setAdapter(AutoSuggestAdapter(
-            this, android.R.layout.simple_list_item_1, MainActivity.POIsWPs!!.keys.toMutableList()))
+            this, android.R.layout.simple_list_item_1,
+            MainActivity.POIsWPs!!.keys.toMutableList().filterNot { it==destination }))
         whereFromACTV.threshold = 1
 
         setListeners()
