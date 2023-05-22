@@ -1,7 +1,6 @@
 package com.afeka.compus
 
 import android.animation.Animator
-import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
@@ -24,6 +23,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.*
 import java.util.Locale
 import java.util.Stack
 
@@ -59,6 +59,8 @@ class NavigationActivity : AppCompatActivity() {
     private var reachedDest = false
     private var site: Site? = null
     private var graph: Graph? = null
+    private var inputEnabled = true
+    private var onThePath = true // always start from starting point
 
     override fun onCreate(savedInstanceState: Bundle?) {
         site = MainActivity.site
@@ -155,12 +157,18 @@ class NavigationActivity : AppCompatActivity() {
         if (forwardBtn.isEnabled)
             colorButton(forwardBtn, R.color.dark)
         colorButtons(arrayOf(leftBtn, rightBtn), R.color.dark) // TODO: Improve code
-        when (val index = shortPathWpIds!!.indexOf(currWpId)) {
-            -1 -> {
-                colorButton(backBtn, R.color.green_500)
-                odedAmar("Turn back.")
+        val index = shortPathWpIds!!.indexOf(currWpId)
+        if (index == -1) { // went off the path
+            colorButton(backBtn, R.color.green_500)
+            if (onThePath) {
+                odedAmar("Go back.") // within an if to not spam it
+                onThePath = false
             }
-            shortPathWpIds!!.size - 1 -> {
+        }
+        else { // on the path
+            onThePath = true
+            // reached destination
+            if (index == shortPathWpIds!!.size - 1) {
                 colorButtons(arrayOf(leftBtn, forwardBtn, rightBtn, backBtn), R.color.green_500)
                 odedAmar("You have reached your destination.")
                 lottie.animate().translationX(2000F).setDuration(2000).startDelay = 2900
@@ -168,7 +176,8 @@ class NavigationActivity : AppCompatActivity() {
                     lottie.playAnimation()
                 reachedDest = true
             }
-            else -> { // still en route
+            // still en route
+            else {
                 when (shortPathDirections[index]) {
                     currDirection -> {
                         colorButton(forwardBtn, R.color.green_500)
@@ -214,14 +223,17 @@ class NavigationActivity : AppCompatActivity() {
 
     private fun setListeners() {
         leftBtn.setOnClickListener {
-            rotateImage(-1) // rotate left
+            if (!inputEnabled) return@setOnClickListener
+            rotateImageBy(-1) // rotate left
             updateStatus()
         }
         rightBtn.setOnClickListener {
-            rotateImage(1) // rotate right
+            if (!inputEnabled) return@setOnClickListener
+            rotateImageBy(1) // rotate right
             updateStatus()
         }
         forwardBtn.setOnClickListener {
+            if (!inputEnabled) return@setOnClickListener
             // move forward, to the next vertex in the graph
             val nextVertex = graph!!.getWpNeighs()[currWpId]?.get(currDirection)
                 ?: return@setOnClickListener
@@ -234,15 +246,26 @@ class NavigationActivity : AppCompatActivity() {
             updateStatus()
         }
         backBtn.setOnClickListener {
+            if (!inputEnabled) return@setOnClickListener
             // Move to the previous waypoint according to the stack // TODO: grey-out if stack is empty
             if (prevWps.size <= 0) return@setOnClickListener
-            val previousVertex = prevWps.peek()
-            for (i in directions.indices)
-                imageIntoView(previousVertex + "-" + directions[i], carouselViews[i])
-            currWpId = prevWps.pop()
+            val prevWpId = prevWps.peek()
+            val dirToPrevWp = graph!!.getWpNeighs()[currWpId]!!.indexOf(prevWpId)
+            if (currDirection != dirToPrevWp) {
+                if (currDirection == (dirToPrevWp + 1) % 4)
+                    rotateImageBy(-1)
+                else rotateImageBy(1)
+                // in case it's 180 degrees, just press again. One step at a time is more legible
+            }
+            else {
+                currWpId = prevWps.pop()
+                for (i in directions.indices)
+                    imageIntoView(currWpId + "-" + directions[i], carouselViews[i])
+            }
             updateStatus()
         }
         reportBTN.setOnClickListener {
+            if (!inputEnabled) return@setOnClickListener
             val currentImageURL = MainActivity.imageURLs?.get(currWpId + "-" + directions[currDirection])
             UtilityMethods.switchActivityWithData(this, ReportActivity::class.java,
                 currentImageURL!!, currWpId, currDirection.toString())
@@ -256,32 +279,33 @@ class NavigationActivity : AppCompatActivity() {
             Glide.with(this).load(MainActivity.imageURLs!![imageName]).placeholder(R.drawable.load_icon).into(imageView)
     }
 
-    private fun rotateImage(direction: Int) {
-        currDirection += direction
+    private fun rotateImageBy(rotateAmount: Int) {
+        currDirection += rotateAmount
         currDirection = (currDirection + 4) % 4
-        val imageName = currWpId + "-" + directions[currDirection]
-        if (!wpImages.containsKey(imageName)) {
-            println("Image not found: $imageName")
-            return
-        }
-        when (direction) {
+        when (rotateAmount) {
             1 -> { // rotate right
                 viewFlipper.setInAnimation(this, R.anim.slide_in_right)
                 viewFlipper.setOutAnimation(this, R.anim.slide_out_left)
                 viewFlipper.showNext()
+                delayInput(500)
             }
             -1 -> { // rotate left
                 viewFlipper.setInAnimation(this, android.R.anim.slide_in_left)
                 viewFlipper.setOutAnimation(this, android.R.anim.slide_out_right)
                 viewFlipper.showPrevious()
+                delayInput(500)
             }
-            2, -2 -> { // rotate right twice, to turn 180
-                viewFlipper.setInAnimation(this, R.anim.slide_in_right)
-                viewFlipper.setOutAnimation(this, R.anim.slide_out_left)
-                viewFlipper.showNext()
-                Thread.sleep(500)
-                viewFlipper.showNext()
+            else -> {
+                println("rotateImageBy: rotateAmount must be 1 or -1")
             }
+        }
+    }
+
+    private fun delayInput(delayMillis: Long) {
+        inputEnabled = false
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(delayMillis)  // Wait for 500 milliseconds
+            inputEnabled = true  // Enable the button
         }
     }
 
@@ -294,12 +318,10 @@ class NavigationActivity : AppCompatActivity() {
     private fun colorButton(imageButton: ImageButton, @ColorRes id: Int) {
         if (imageButton.javaClass == AppCompatImageButton::class.java) {
             imageButton.setBackgroundColor(ContextCompat.getColor(this, id))
-            println("I'm an ImageButton, my id is: " + imageButton.id)
         }
         else {
             (imageButton as FloatingActionButton).backgroundTintList = ContextCompat.getColorStateList(this, id)
-            imageButton.supportBackgroundTintList = ContextCompat.getColorStateList(this, id)
-            println("I'm a FAB, my id is: " + imageButton.id)
+            imageButton.supportBackgroundTintList = ContextCompat.getColorStateList(this, id) // TODO: Figure out
         }
     }
 
@@ -313,6 +335,4 @@ class NavigationActivity : AppCompatActivity() {
     private fun placeFromWp(wpId: String): Place {
         return graph!!.getPlaces().first { it.getPlaceName() == graph!!.getWps()[wpId]!!.getPlaceId() }
     }
-
-
 }
