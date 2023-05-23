@@ -4,11 +4,9 @@ import android.animation.Animator
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
-import android.view.MotionEvent
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ViewFlipper
@@ -127,8 +125,8 @@ class NavigationActivity : AppCompatActivity() {
         for (i in areaNames.indices) {
             toggleGroup.getChildAt(i).setOnClickListener {
                 imageIntoView("area_map_${areaNames[i]}", areaMapView)
-                if(areaNames[i] == "F2")
-                    makeLine()
+                if(areaNames[i] == "F2") // TODO: Hardcoded
+                    makeLineExample()
             }
         }
     }
@@ -143,54 +141,50 @@ class NavigationActivity : AppCompatActivity() {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun makeLine() {
+    private fun makeLineExample() {
         val bitmap = MainActivity.imageBitmaps["area_map_F2"]
         val mCanvas = bitmap?.let { Canvas(it) }
-        val mPaint = Paint()
-        mPaint.color = Color.RED
-        mPaint.style = Paint.Style.STROKE
-        mPaint.strokeWidth = 10F
-        mPaint.isAntiAlias = true
+        val inWidth = 30F
+        val outWidth = 40F
+        val inColor = 0xffff9532.toInt()
+        val outColor = 0xffcb6200.toInt()
+
+        val lineInner = Paint()
+        lineInner.color = inColor
+        lineInner.style = Paint.Style.STROKE
+        lineInner.strokeWidth = inWidth
+        lineInner.isAntiAlias = true
+        val lineBorder = Paint(lineInner)
+        lineBorder.color = outColor
+        lineBorder.strokeWidth = outWidth
+
+        val circleInner = Paint().apply { color = inColor }.apply { style = Paint.Style.FILL }
+        val circleBorder = Paint().apply { color = outColor }.apply { style = Paint.Style.FILL }
 
 // Declaring start and end
 // coordinates on the canvas
-        val ENTRANCE = Pair<Float,Float>(640F,680F)
-        val RECEPTION = Pair<Float,Float>(640F,400F)
-        val HALL_LEFT = Pair<Float,Float>(340F,400F)
-        val STAIRS_UP = Pair<Float,Float>(770F,400F)
-        val HALL_RIGHT = Pair<Float,Float>(1040F,400F)
-        val EXIT = Pair<Float,Float>(90F,400F)
-        val HALL_UP = Pair<Float,Float>(1250F,400F)
+        val ENTRANCE = Pair(640F,680F)
+        val RECEPTION = Pair(640F,400F)
+        val HALL_LEFT = Pair(340F,400F)
+        val STAIRS_UP = Pair(770F,400F)
+        val STAIRS_RIGHT = Pair(770F,450F)
+        val HALL_RIGHT = Pair(1040F,400F)
+        val EXIT = Pair(90F,400F)
+        val HALL_UP = Pair(1250F,400F)
 
-        val positions = mutableListOf<Pair<Float, Float>>()
-        positions.add(ENTRANCE)
-        positions.add(RECEPTION)
-        positions.add(HALL_LEFT)
+        val positions = mutableListOf(ENTRANCE, RECEPTION, STAIRS_UP, STAIRS_RIGHT, HALL_RIGHT)
 
-
-// Draw the line
         for (i in 0 until positions.size - 1) {
             val startX = positions[i].first
             val startY = positions[i].second
             val stopX = positions[i + 1].first
             val stopY = positions[i + 1].second
-            mCanvas?.drawLine(startX, startY, stopX, stopY, mPaint)
+            mCanvas?.drawLine(startX, startY, stopX, stopY, lineBorder)
+            mCanvas?.drawLine(startX, startY, stopX, stopY, lineInner)
+            mCanvas?.drawCircle(startX, startY, outWidth/2 + 5, circleBorder)
+            mCanvas?.drawCircle(startX, startY, inWidth/2 + 5, circleInner)
         }
         areaMapView.setImageBitmap(bitmap)
-
-
-//        areaMapView.setOnTouchListener { view, event ->
-//            val action = event.action
-//            when (action) {
-//                MotionEvent.ACTION_DOWN -> {
-//                    val x = event.x.toInt()
-//                    val y = event.y.toInt()
-//                    // Display or use the x and y coordinates
-//                    println("Touched at x=$x, y=$y")
-//                }
-//            }
-//            true
-//        }
     }
 
     private fun findViews() {
