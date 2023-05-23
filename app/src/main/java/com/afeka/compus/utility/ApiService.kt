@@ -8,6 +8,9 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface ApiService {
+    @GET("get_site_list")
+    fun getSiteList(): Call<Map<String, List<String>>>
+
     @GET("get_site")
     fun getSite(
         @Query("site_name") siteName: String,

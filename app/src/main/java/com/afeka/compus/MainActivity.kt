@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.view.View
+import android.widget.AdapterView
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -38,7 +40,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var amNotAtSiteBTN: Button
     lateinit var amAtSiteBTN: Button
     lateinit var modeChoiceTG: MaterialButtonToggleGroup
-    lateinit var autoCompleteTV: AutoCompleteTextView
+    lateinit var destAutoCompleteTV: AutoCompleteTextView
+    lateinit var siteAutoCompleteTV: AutoCompleteTextView
     lateinit var a11yCheckBox: CheckBox
 
     private var currentMode = Modes.LOOKAROUND // default mode
@@ -64,17 +67,39 @@ class MainActivity : AppCompatActivity() {
         findViews()
         setListeners()
         setPromptState(false)
+        modeChoiceTG.check(R.id.directionsMode)
 
-        val siteName = "Afeka" // TODO: replace these two with user input
-        val graphName = "Campus"
+        val siteNamesToGraphNames = sm.getSiteList()!!
+        val siteAndGraphNames = mutableListOf<String>()
+        for (siteName in siteNamesToGraphNames.keys) {
+            for (graphName in siteNamesToGraphNames[siteName]!!) {
+                siteAndGraphNames.add("$siteName, $graphName")
+            }
+        }
+        siteAutoCompleteTV.setAdapter(AutoSuggestAdapter(this, android.R.layout.simple_list_item_1, siteAndGraphNames))
+        siteAutoCompleteTV.threshold = 1
+        // if siteAutoCompleteTV only has 1 item, select it automatically
+        if (siteAutoCompleteTV.adapter!!.count == 1) {
+            siteAutoCompleteTV.setText(siteAutoCompleteTV.adapter!!.getItem(0).toString(), false)
+            siteAutoCompleteTV.dismissDropDown()
+            // trigger the onItemSelected listener for the first item
+            siteAutoCompleteTV.onItemClickListener.onItemClick(null, null, 0, 0) // TODO: Cannot fix. Change to list dropdown
+            loadSite()
+        }
+        // same as siteAutoCompleteTV's, but for site_spinner
+    }
+
+    private fun loadSite() {
+        // siteName and graphName are separated by a comma, from siteAutoCompleteTV
+        val siteName = siteAutoCompleteTV.text.toString().split(", ")[0]
+        val graphName = siteAutoCompleteTV.text.toString().split(", ")[1]
         site = sm.getSite(siteName)
         graph = site!!.getGraphs().find { it.getGraphName() == graphName }
 
         POIsWPs = graph!!.getPoiWps().map { graph!!.getWps()[it.value]!!.getPlaceId() +
                 ", " + it.key to it.value }.toMap() // 'Class 304' -> 'Ficus, Class 304'
-        autoCompleteTV.setAdapter(AutoSuggestAdapter(this, android.R.layout.simple_list_item_1, POIsWPs!!.keys.toList()))
-        autoCompleteTV.threshold = 1
-        modeChoiceTG.check(R.id.directionsMode)
+        destAutoCompleteTV.setAdapter(AutoSuggestAdapter(this, android.R.layout.simple_list_item_1, POIsWPs!!.keys.toList()))
+        destAutoCompleteTV.threshold = 1
         imageURLs = sm.getSiteImageURLs(siteName)
         downloadImages()
     }
@@ -103,42 +128,51 @@ class MainActivity : AppCompatActivity() {
     private fun setListeners() {
         modeChoiceTG.addOnButtonCheckedListener { group, checkedId, isChecked ->
             if (isChecked) { // only activate the listener of the currently checked button
-                if (autoCompleteTV.text.isNotEmpty()) {
+                if (destAutoCompleteTV.text.isNotEmpty()) {
                     // if there is text but not the currently selected item, or LookAround mode, show drop down
-                    if (autoCompleteTV.text.toString() != destWpId || checkedId == R.id.lookaroundMode)
-                        autoCompleteTV.showDropDown()
+                    if (destAutoCompleteTV.text.toString() != destWpId || checkedId == R.id.lookaroundMode)
+                        destAutoCompleteTV.showDropDown()
                     else
                         setPromptState(true)
                 }
                 if (checkedId == R.id.directionsMode) {
                     currentMode = Modes.NAVIGATION
-                    destInputHintText.text = "Where to in ${site!!.getSiteName()}?"
+                    destInputHintText.text = "Where to in ${site?.getSiteName()}?"
                     a11yCheckBox.visibility = View.VISIBLE
                 }
                 else if (checkedId == R.id.lookaroundMode) {
                     currentMode = Modes.LOOKAROUND
-                    destInputHintText.text = "Look where in ${site!!.getSiteName()}?"
+                    destInputHintText.text = "Look where in ${site?.getSiteName()}?"
                     a11yCheckBox.visibility = View.INVISIBLE
                     setPromptState(false)
                 }
             }
         }
 
-        autoCompleteTV.setOnItemClickListener { parent, view, position, id ->
-            closeKeyboard(this, autoCompleteTV)
+        destAutoCompleteTV.setOnItemClickListener { parent, view, position, id ->
+            closeKeyboard(this, destAutoCompleteTV)
             val selectedItem = parent.getItemAtPosition(position) as String
-            autoCompleteTV.setText(selectedItem)
+            destAutoCompleteTV.setText(selectedItem)
             destWpId = selectedItem
             if (currentMode == Modes.NAVIGATION) {
                 setPromptState(true)
             }
             else if (currentMode == Modes.LOOKAROUND) {
-                println("Destination: $destWpId") // TODO: Rename destination
+                println("Destination: $destWpId")
                 switchActivityWithData(this, NavigationActivity::class.java, destWpId)
             }
         }
+        siteAutoCompleteTV.setOnItemClickListener { parent, view, position, id ->
+            closeKeyboard(this, siteAutoCompleteTV)
+            val selectedItem = parent.getItemAtPosition(position) as String
+            siteAutoCompleteTV.setText(selectedItem)
+            loadSite()
+            modeChoiceTG.check(modeChoiceTG.checkedButtonId)
+            destInputHintText.visibility = View.VISIBLE
+            destInput.visibility = View.VISIBLE
+        }
         destInput.setEndIconOnClickListener {
-            autoCompleteTV.setText("")
+            destAutoCompleteTV.setText("")
             setPromptState(false)
         }
         a11yCheckBox.setOnClickListener {
@@ -157,7 +191,8 @@ class MainActivity : AppCompatActivity() {
         modeChoiceTG = findViewById(R.id.toggleButton)
         amNotAtSiteBTN = findViewById(R.id.reach_place)
         amAtSiteBTN = findViewById(R.id.im_at_place)
-        autoCompleteTV = findViewById(R.id.TXT_ACV_Search)
+        destAutoCompleteTV = findViewById(R.id.dest_ACTV)
+        siteAutoCompleteTV = findViewById(R.id.site_ACTV)
         destInput = findViewById(R.id.textInputLayout)
         startPointChoiceText = findViewById(R.id.textView3)
         a11yCheckBox = findViewById(R.id.a11y_checkbox)

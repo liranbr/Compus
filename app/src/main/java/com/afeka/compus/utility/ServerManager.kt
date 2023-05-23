@@ -54,6 +54,13 @@ class ServerManager {
         }
     }
 
+    fun getSiteList(): Map<String, List<String>>? { // map of site name to list of its graph names
+        val call = service.getSiteList()
+        println(call.request().url())
+        val response = execute(call)
+        return if (response.isSuccessful) (response as Response<Map<String, List<String>>>).body() else null
+    }
+
     fun getSite(siteName: String): Site? {
         val call = service.getSite(siteName)
         println(call.request().url())
@@ -111,5 +118,4 @@ class ServerManager {
                 else errorMessage(response.code(), response.errorBody())
         )
     }
-
 }

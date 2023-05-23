@@ -72,7 +72,6 @@
         android:hint=" "
         app:expandedHintEnabled="false"
         app:hintAnimationEnabled="false"
-        android:autofillHints="creditCardNumber"
         app:boxStrokeWidth="0dp"
         app:boxStrokeWidthFocused="0dp"
         app:endIconMode="clear_text"

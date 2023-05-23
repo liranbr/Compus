@@ -65,17 +65,28 @@
             android:paddingHorizontal="30dp"
             android:paddingVertical="30dp"
             android:orientation="vertical">
+
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
-                android:text="Look where in [Placeholder]?"
+                android:text="Select a Site"
                 android:textColor="@color/dark"
                 android:textSize="20dp" />
+<!--            Selector from list of options, spinner-->
+            <Spinner
+                android:id="@+id/site_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/outlined_input_box"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:spinnerMode="dropdown"
+                android:prompt="Site" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayout"
+                android:id="@+id/siteInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/outlined_input_box"
@@ -83,13 +94,12 @@
                 android:hint=" "
                 app:expandedHintEnabled="false"
                 app:hintAnimationEnabled="false"
-                android:autofillHints="creditCardNumber"
                 app:boxStrokeWidth="0dp"
                 app:boxStrokeWidthFocused="0dp"
                 app:endIconMode="clear_text">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/TXT_ACV_Search"
+                    android:id="@+id/site_ACTV"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="51dp"
@@ -108,6 +118,42 @@
                 android:text="Wheelchair accessibility"
                 android:visibility="invisible"
                 android:textColor="@color/dark" />
+            <TextView
+                android:id="@+id/textView2"
+                android:visibility="invisible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp"
+                android:text="Look where in [Placeholder]?"
+                android:textColor="@color/dark"
+                android:textSize="20dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout"
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/outlined_input_box"
+                android:paddingHorizontal="16dp"
+                android:hint=" "
+                app:expandedHintEnabled="false"
+                app:hintAnimationEnabled="false"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/dest_ACTV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="51dp"
+                    android:backgroundTint="@android:color/transparent"
+                    android:hint="Enter your destination"
+                    android:inputType="text"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
 
 
             <TextView
