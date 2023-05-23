@@ -7,6 +7,7 @@ import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.view.View
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.CheckBox
@@ -29,7 +30,6 @@ import com.google.firebase.FirebaseApp
 
 
 class MainActivity : AppCompatActivity() {
-
     enum class Modes {
         NAVIGATION,
         LOOKAROUND
@@ -41,9 +41,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var amAtSiteBTN: Button
     lateinit var modeChoiceTG: MaterialButtonToggleGroup
     lateinit var destAutoCompleteTV: AutoCompleteTextView
-    lateinit var siteAutoCompleteTV: AutoCompleteTextView
+    lateinit var siteSpinner: Spinner
     lateinit var a11yCheckBox: CheckBox
-
     private var currentMode = Modes.LOOKAROUND // default mode
     private var destWpId = ""
     companion object {
@@ -76,26 +75,22 @@ class MainActivity : AppCompatActivity() {
                 siteAndGraphNames.add("$siteName, $graphName")
             }
         }
-        siteAutoCompleteTV.setAdapter(AutoSuggestAdapter(this, android.R.layout.simple_list_item_1, siteAndGraphNames))
-        siteAutoCompleteTV.threshold = 1
-        // if siteAutoCompleteTV only has 1 item, select it automatically
-        if (siteAutoCompleteTV.adapter!!.count == 1) {
-            siteAutoCompleteTV.setText(siteAutoCompleteTV.adapter!!.getItem(0).toString(), false)
-            siteAutoCompleteTV.dismissDropDown()
-            // trigger the onItemSelected listener for the first item
-            siteAutoCompleteTV.onItemClickListener.onItemClick(null, null, 0, 0) // TODO: Cannot fix. Change to list dropdown
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter(this, android.R.layout.simple_spinner_item, siteAndGraphNames).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            siteSpinner.adapter = adapter
+            siteSpinner.setSelection(0)
             loadSite()
         }
-        // same as siteAutoCompleteTV's, but for site_spinner
     }
 
     private fun loadSite() {
-        // siteName and graphName are separated by a comma, from siteAutoCompleteTV
-        val siteName = siteAutoCompleteTV.text.toString().split(", ")[0]
-        val graphName = siteAutoCompleteTV.text.toString().split(", ")[1]
+        val siteName = siteSpinner.selectedItem.toString().split(", ")[0]
+        val graphName = siteSpinner.selectedItem.toString().split(", ")[1]
         site = sm.getSite(siteName)
+        updateDestHint()
         graph = site!!.getGraphs().find { it.getGraphName() == graphName }
-
         POIsWPs = graph!!.getPoiWps().map { graph!!.getWps()[it.value]!!.getPlaceId() +
                 ", " + it.key to it.value }.toMap() // 'Class 304' -> 'Ficus, Class 304'
         destAutoCompleteTV.setAdapter(AutoSuggestAdapter(this, android.R.layout.simple_list_item_1, POIsWPs!!.keys.toList()))
@@ -125,6 +120,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateDestHint() {
+        if (currentMode == Modes.NAVIGATION) {
+            destInputHintText.text = "Where to in ${site?.getSiteName()}?"
+            a11yCheckBox.visibility = View.VISIBLE
+        }
+        else if (currentMode == Modes.LOOKAROUND) {
+            destInputHintText.text = "Look around in ${site?.getSiteName()}?"
+            a11yCheckBox.visibility = View.INVISIBLE
+            setPromptState(false)
+        }
+    }
+
     private fun setListeners() {
         modeChoiceTG.addOnButtonCheckedListener { group, checkedId, isChecked ->
             if (isChecked) { // only activate the listener of the currently checked button
@@ -137,14 +144,11 @@ class MainActivity : AppCompatActivity() {
                 }
                 if (checkedId == R.id.directionsMode) {
                     currentMode = Modes.NAVIGATION
-                    destInputHintText.text = "Where to in ${site?.getSiteName()}?"
-                    a11yCheckBox.visibility = View.VISIBLE
+                    updateDestHint()
                 }
                 else if (checkedId == R.id.lookaroundMode) {
                     currentMode = Modes.LOOKAROUND
-                    destInputHintText.text = "Look where in ${site?.getSiteName()}?"
-                    a11yCheckBox.visibility = View.INVISIBLE
-                    setPromptState(false)
+                    updateDestHint()
                 }
             }
         }
@@ -162,14 +166,14 @@ class MainActivity : AppCompatActivity() {
                 switchActivityWithData(this, NavigationActivity::class.java, destWpId)
             }
         }
-        siteAutoCompleteTV.setOnItemClickListener { parent, view, position, id ->
-            closeKeyboard(this, siteAutoCompleteTV)
-            val selectedItem = parent.getItemAtPosition(position) as String
-            siteAutoCompleteTV.setText(selectedItem)
-            loadSite()
-            modeChoiceTG.check(modeChoiceTG.checkedButtonId)
-            destInputHintText.visibility = View.VISIBLE
-            destInput.visibility = View.VISIBLE
+        // set the listener for when an item from the drop down list is clicked
+        siteSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                loadSite()
+                destInputHintText.visibility = View.VISIBLE
+                destInput.visibility = View.VISIBLE
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
         destInput.setEndIconOnClickListener {
             destAutoCompleteTV.setText("")
@@ -192,7 +196,7 @@ class MainActivity : AppCompatActivity() {
         amNotAtSiteBTN = findViewById(R.id.reach_place)
         amAtSiteBTN = findViewById(R.id.im_at_place)
         destAutoCompleteTV = findViewById(R.id.dest_ACTV)
-        siteAutoCompleteTV = findViewById(R.id.site_ACTV)
+        siteSpinner = findViewById(R.id.site_spinner)
         destInput = findViewById(R.id.textInputLayout)
         startPointChoiceText = findViewById(R.id.textView3)
         a11yCheckBox = findViewById(R.id.a11y_checkbox)

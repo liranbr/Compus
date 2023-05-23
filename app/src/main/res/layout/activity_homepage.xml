@@ -74,41 +74,15 @@
                 android:text="Select a Site"
                 android:textColor="@color/dark"
                 android:textSize="20dp" />
-<!--            Selector from list of options, spinner-->
+
             <Spinner
                 android:id="@+id/site_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/outlined_input_box"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:spinnerMode="dropdown"
-                android:prompt="Site" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/siteInputLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/outlined_input_box"
-                android:paddingHorizontal="16dp"
-                android:hint=" "
-                app:expandedHintEnabled="false"
-                app:hintAnimationEnabled="false"
-                app:boxStrokeWidth="0dp"
-                app:boxStrokeWidthFocused="0dp"
-                app:endIconMode="clear_text">
-
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/site_ACTV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="51dp"
-                    android:backgroundTint="@android:color/transparent"
-                    android:hint="Enter your destination"
-                    android:inputType="text"
-                    android:imeOptions="actionUnspecified"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="10dp"
+                android:spinnerMode="dropdown" />
 
             <CheckBox
                 android:id="@+id/a11y_checkbox"
