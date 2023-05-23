@@ -6,7 +6,7 @@ class Waypoint(
     @SerializedName("id") private val id: String,
     @SerializedName("place_id") private val placeId: String,
     @SerializedName("area_id") private val areaId: String,
-    @SerializedName("pos") private val pos: Map<String, Int>) {
+    @SerializedName("pos") private val pos: Map<String, Float>?) {
 
     fun getId() = id
     fun getPlaceId() = placeId

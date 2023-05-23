@@ -118,15 +118,19 @@ class NavigationActivity : AppCompatActivity() {
 
     private fun updatePlace() {
         currPlace = placeFromWp(currWpId)
+        currArea = areaFromWp(currWpId)
         val areaNames = currPlace.getAreas().map { it.getAreaId()}
         // Set up area map toggle buttons, currently invisible
         toggleGroup.removeAllViews()
         areaNames.forEach { toggleGroup.addView(MaterialButton(this).apply { text = it }) }
         for (i in areaNames.indices) {
             toggleGroup.getChildAt(i).setOnClickListener {
-                imageIntoView("area_map_${areaNames[i]}", areaMapView)
-                if(areaNames[i] == "F2") // TODO: Hardcoded
-                    makeLineExample()
+                if(isNavigation){
+                    val bitmap = drawPathOnAreaMap(areaNames[i])
+                    areaMapView.setImageBitmap(bitmap)
+                }
+                else
+                    imageIntoView("area_map_${areaNames[i]}", areaMapView)
             }
         }
     }
@@ -141,8 +145,8 @@ class NavigationActivity : AppCompatActivity() {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun makeLineExample() {
-        val bitmap = MainActivity.imageBitmaps["area_map_F2"]
+    private fun drawPathOnAreaMap(area_map_id: String) : Bitmap {
+        val bitmap = MainActivity.imageBitmaps["area_map_$area_map_id"]
         val mCanvas = bitmap?.let { Canvas(it) }
         val inWidth = 30F
         val outWidth = 40F
@@ -161,18 +165,19 @@ class NavigationActivity : AppCompatActivity() {
         val circleInner = Paint().apply { color = inColor }.apply { style = Paint.Style.FILL }
         val circleBorder = Paint().apply { color = outColor }.apply { style = Paint.Style.FILL }
 
-// Declaring start and end
-// coordinates on the canvas
-        val ENTRANCE = Pair(640F,680F)
-        val RECEPTION = Pair(640F,400F)
-        val HALL_LEFT = Pair(340F,400F)
-        val STAIRS_UP = Pair(770F,400F)
-        val STAIRS_RIGHT = Pair(770F,450F)
-        val HALL_RIGHT = Pair(1040F,400F)
-        val EXIT = Pair(90F,400F)
-        val HALL_UP = Pair(1250F,400F)
+        val positions = mutableListOf<Pair<Float, Float>>()
 
-        val positions = mutableListOf(ENTRANCE, RECEPTION, STAIRS_UP, STAIRS_RIGHT, HALL_RIGHT)
+        val wpMap = MainActivity.graph?.getWps()
+        for (i in 0 until (shortPathWpIds?.size!!)) {
+            val wp = wpMap?.get(shortPathWpIds!![i])
+            if(wp != null && wp.getAreaId() == currArea.getAreaId()) {
+                val pos = wp.getPos()
+                if(pos != null){
+                    val pair = Pair(pos["x"]!!, pos["y"]!!)
+                    positions.add(pair)
+                }
+            }
+        }
 
         for (i in 0 until positions.size - 1) {
             val startX = positions[i].first
@@ -184,7 +189,10 @@ class NavigationActivity : AppCompatActivity() {
             mCanvas?.drawCircle(startX, startY, outWidth/2 + 5, circleBorder)
             mCanvas?.drawCircle(startX, startY, inWidth/2 + 5, circleInner)
         }
-        areaMapView.setImageBitmap(bitmap)
+
+        //TODO: implement the code below on "drawCurrentWp"
+//        areaMapView.setImageBitmap(bitmap)
+        return bitmap!!
     }
 
     private fun findViews() {
@@ -386,5 +394,9 @@ class NavigationActivity : AppCompatActivity() {
 
     private fun placeFromWp(wpId: String): Place {
         return graph!!.getPlaces().first { it.getPlaceName() == graph!!.getWps()[wpId]!!.getPlaceId() }
+    }
+
+    private fun areaFromWp(wpId: String) : Area{
+        return currPlace!!.getAreas().first { it.getAreaId() == graph!!.getWps()[wpId]!!.getAreaId() }
     }
 }
