@@ -100,7 +100,7 @@ class NavigationActivity : AppCompatActivity() {
         }
         // put an image in each carousel view, from wpImages from mainActivity
         carouselViews.forEachIndexed { i, imageView ->
-            imageIntoView("${currWpId}-${directions[i]}", imageView)
+            imageNameIntoView("${currWpId}-${directions[i]}", imageView)
         }
 
         if (isNavigation) {
@@ -138,7 +138,7 @@ class NavigationActivity : AppCompatActivity() {
                     areaMapView.setImageBitmap(areaBitmap)
                 }
                 else
-                    imageIntoView("area_map_${areaNames[i]}", areaMapView)
+                    imageNameIntoView("area_map_${areaNames[i]}", areaMapView)
             }
         }
     }
@@ -206,8 +206,8 @@ class NavigationActivity : AppCompatActivity() {
 
         val bitmap = areaBitmap.copy(areaBitmap.config,true)
         val mCanvas = Canvas(bitmap)
-        val inWidth = 40F
-        val outWidth = 45F
+        val inWidth = 65F
+        val outWidth = 70F
         val inColor = Color.GREEN
         val outColor = 0xffcb6200.toInt()
 
@@ -224,8 +224,6 @@ class NavigationActivity : AppCompatActivity() {
         val circleBorder = Paint().apply { color = outColor }.apply { style = Paint.Style.FILL }
 
         val pos = MainActivity.graph?.getWps()?.get(currWpId)?.getPos()
-
-        val wpMap = MainActivity.graph?.getWps()
 
         if(pos != null){
             val pair = Pair(pos["x"]!!, pos["y"]!!)
@@ -350,7 +348,7 @@ class NavigationActivity : AppCompatActivity() {
                 ?: return@setOnClickListener
             for (i in directions.indices) {
                 val imageName = nextVertex + "-" + directions[i]
-                imageIntoView(imageName, carouselViews[i])
+                imageNameIntoView(imageName, carouselViews[i])
             }
             prevWps.add(currWpId)
             currWpId = nextVertex
@@ -372,7 +370,7 @@ class NavigationActivity : AppCompatActivity() {
             else {
                 currWpId = prevWps.pop()
                 for (i in directions.indices)
-                    imageIntoView(currWpId + "-" + directions[i], carouselViews[i])
+                    imageNameIntoView(currWpId + "-" + directions[i], carouselViews[i])
             }
             updateStatus()
             drawCurrentWp()
@@ -385,7 +383,7 @@ class NavigationActivity : AppCompatActivity() {
         }
     }
 
-    private fun imageIntoView(imageName: String, imageView: ImageView) {
+    private fun imageNameIntoView(imageName: String, imageView: ImageView) {
         if (wpImages.containsKey(imageName))
             imageView.setImageBitmap(wpImages[imageName])
         else
