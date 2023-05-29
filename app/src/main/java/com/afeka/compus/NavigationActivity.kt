@@ -115,6 +115,7 @@ class NavigationActivity : AppCompatActivity() {
         colorButtons(arrayOf(leftBtn, forwardBtn, rightBtn, backBtn), R.color.dark)
         updatePlace()
         updateStatus()
+        drawCurrentWp()
         setListeners()
     }
 
