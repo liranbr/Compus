@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
@@ -37,6 +38,7 @@ class NavigationActivity : AppCompatActivity() {
     private lateinit var carouselViews: Array<ImageView>
     private lateinit var viewFlipper: ViewFlipper
     private lateinit var areaMapView: ImageView
+    private lateinit var areaBitmap: Bitmap
     private lateinit var backBtn: ImageButton
     private lateinit var leftBtn: ImageButton
     private lateinit var forwardBtn: ImageButton
@@ -131,8 +133,8 @@ class NavigationActivity : AppCompatActivity() {
         for (i in areaNames.indices) {
             toggleGroup.getChildAt(i).setOnClickListener {
                 if(isNavigation){
-                    val bitmap = drawPathOnAreaMap(areaNames[i])
-                    areaMapView.setImageBitmap(bitmap)
+                    areaBitmap = drawPathOnAreaMap(areaNames[i])
+                    areaMapView.setImageBitmap(areaBitmap)
                 }
                 else
                     imageIntoView("area_map_${areaNames[i]}", areaMapView)
@@ -194,10 +196,51 @@ class NavigationActivity : AppCompatActivity() {
             mCanvas?.drawCircle(startX, startY, outWidth/2 + 5, circleBorder)
             mCanvas?.drawCircle(startX, startY, inWidth/2 + 5, circleInner)
         }
-
-        //TODO: implement the code below on "drawCurrentWp"
-//        areaMapView.setImageBitmap(bitmap)
         return bitmap!!
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun drawCurrentWp() {
+        if(!isNavigation) return
+
+        val bitmap = areaBitmap.copy(areaBitmap.config,true)
+        val mCanvas = Canvas(bitmap)
+        val inWidth = 40F
+        val outWidth = 45F
+        val inColor = Color.GREEN
+        val outColor = 0xffcb6200.toInt()
+
+        val lineInner = Paint()
+        lineInner.color = inColor
+        lineInner.style = Paint.Style.STROKE
+        lineInner.strokeWidth = inWidth
+        lineInner.isAntiAlias = true
+        val lineBorder = Paint(lineInner)
+        lineBorder.color = outColor
+        lineBorder.strokeWidth = outWidth
+
+        val circleInner = Paint().apply { color = inColor }.apply { style = Paint.Style.FILL }
+        val circleBorder = Paint().apply { color = outColor }.apply { style = Paint.Style.FILL }
+
+        val pos = MainActivity.graph?.getWps()?.get(currWpId)?.getPos()
+
+        val wpMap = MainActivity.graph?.getWps()
+
+        if(pos != null){
+            val pair = Pair(pos["x"]!!, pos["y"]!!)
+            val pair2 = Pair(pos["x"]!! + 1, pos["y"]!! + 1)
+            val startX = pair.first
+            val startY = pair.second
+            val stopX = pair2.first
+            val stopY = pair2.second
+            mCanvas.drawLine(startX, startY, stopX, stopY, lineBorder)
+            mCanvas.drawLine(startX, startY, stopX, stopY, lineInner)
+            mCanvas.drawCircle(startX, startY, outWidth/2 + 5, circleBorder)
+            mCanvas.drawCircle(startX, startY, inWidth/2 + 5, circleInner)
+        }
+
+        areaMapView.setImageBitmap(bitmap)
+
     }
 
     private fun findViews() {
@@ -311,6 +354,7 @@ class NavigationActivity : AppCompatActivity() {
             prevWps.add(currWpId)
             currWpId = nextVertex
             updateStatus()
+            drawCurrentWp()
         }
         backBtn.setOnClickListener {
             if (!inputEnabled) return@setOnClickListener
@@ -330,6 +374,7 @@ class NavigationActivity : AppCompatActivity() {
                     imageIntoView(currWpId + "-" + directions[i], carouselViews[i])
             }
             updateStatus()
+            drawCurrentWp()
         }
         reportBTN.setOnClickListener {
             if (!inputEnabled) return@setOnClickListener
