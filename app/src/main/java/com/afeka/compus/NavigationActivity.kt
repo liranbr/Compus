@@ -119,6 +119,11 @@ class NavigationActivity : AppCompatActivity() {
     private fun updatePlace() {
         currPlace = placeFromWp(currWpId)
         currArea = areaFromWp(currWpId)
+        updateArea()
+    }
+
+    private fun updateArea(){
+        currArea = areaFromWp(currWpId)
         val areaNames = currPlace.getAreas().map { it.getAreaId()}
         // Set up area map toggle buttons, currently invisible
         toggleGroup.removeAllViews()
@@ -259,6 +264,8 @@ class NavigationActivity : AppCompatActivity() {
         // Update the place, and area buttons
         if (graph!!.getWps()[currWpId]!!.getPlaceId() != currPlace.getPlaceName())
             updatePlace()
+        else if (graph!!.getWps()[currWpId]!!.getAreaId() != currArea.getAreaId())
+            updateArea()
 
         // Update the area map
         val currentAreaId = graph!!.getWps()[currWpId]!!.getAreaId()
