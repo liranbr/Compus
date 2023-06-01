@@ -127,6 +127,7 @@ class NavigationActivity : AppCompatActivity() {
 
     private fun updateArea(){
         currArea = areaFromWp(currWpId)
+        areaBitmap = MainActivity.imageBitmaps["area_map_${currArea.getAreaId()}"]!!
         val areaNames = currPlace.getAreas().map { it.getAreaId()}
         // Set up area map toggle buttons, currently invisible
         toggleGroup.removeAllViews()
@@ -202,7 +203,7 @@ class NavigationActivity : AppCompatActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun drawCurrentWp() {
-        if(!isNavigation) return
+//        if(!isNavigation) return
 
         val bitmap = areaBitmap.copy(areaBitmap.config,true)
         val mCanvas = Canvas(bitmap)
