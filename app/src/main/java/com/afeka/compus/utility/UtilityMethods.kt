@@ -17,7 +17,7 @@ class UtilityMethods {
 
         fun switchActivityWithData(context: Context, activity: Class<*>, vararg data: String) {
             val intent = Intent(context, activity)
-            // TODO: add optional key attributes
+            // refactor: can make key attributes optional?
             for (i in data.indices) {
                 intent.putExtra("key$i", data[i])
             }

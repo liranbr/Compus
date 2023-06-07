@@ -57,7 +57,7 @@ class NavigationActivity : AppCompatActivity() {
     private var startWpId = ""
     private var destWpId = ""
     private var wpImages: HashMap<String, Bitmap> = MainActivity.imageBitmaps!!
-    private val directions = arrayOf("up", "right", "down", "left") // TODO: Need?
+    private val directions = arrayOf("up", "right", "down", "left")
     private var shortPathDirections = IntArray(0)
     private var shortPathWpIds: List<String> ?= null
     private val prevWps = Stack<String>()
@@ -261,10 +261,10 @@ class NavigationActivity : AppCompatActivity() {
     }
 
     private fun getCurrentStep() {
-        if (!isNavigation) return
+        if (!isNavigation) return  // this function's code can be improved
         if (forwardBtn.isEnabled)
             colorButton(forwardBtn, R.color.dark)
-        colorButtons(arrayOf(leftBtn, rightBtn), R.color.dark) // TODO: Improve code
+        colorButtons(arrayOf(leftBtn, rightBtn), R.color.dark)
         val index = shortPathWpIds!!.indexOf(currWpId)
         if (index == -1) { // went off the path
             colorButton(backBtn, R.color.green_500)
@@ -358,7 +358,7 @@ class NavigationActivity : AppCompatActivity() {
         }
         backBtn.setOnClickListener {
             if (!inputEnabled) return@setOnClickListener
-            // Move to the previous waypoint according to the stack // TODO: grey-out if stack is empty
+            // Move to the previous waypoint according to the stack
             if (prevWps.size <= 0) return@setOnClickListener
             val prevWpId = prevWps.peek()
             val dirToPrevWp = graph!!.getWpNeighs()[currWpId]!!.indexOf(prevWpId)
@@ -433,7 +433,7 @@ class NavigationActivity : AppCompatActivity() {
         }
         else {
             (imageButton as FloatingActionButton).backgroundTintList = ContextCompat.getColorStateList(this, id)
-            imageButton.supportBackgroundTintList = ContextCompat.getColorStateList(this, id) // TODO: Figure out
+            imageButton.supportBackgroundTintList = ContextCompat.getColorStateList(this, id)
         }
     }
 

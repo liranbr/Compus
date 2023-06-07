@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         var site : Site? = null
         var graph: Graph? = null
         var POIsWPs: Map<String, String>? = null
-        var imageURLs : Map<String, String>? = null // TODO: remove ? and initialize
+        var imageURLs : Map<String, String>? = null
         var imageBitmaps = HashMap<String, Bitmap>()
         var sm = ServerManager()
         var a11yMode = "WALK"
@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     imageBitmaps!![entry.key] = resource
                 }
-                override fun onLoadCleared(placeholder: Drawable?) {} // TODO: Remove?
+                override fun onLoadCleared(placeholder: Drawable?) {}
             })
         }
     }

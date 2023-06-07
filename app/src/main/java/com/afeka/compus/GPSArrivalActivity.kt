@@ -36,12 +36,12 @@ class GPSArrivalActivity: AppCompatActivity() {
     private fun setListeners() {
         next_button.setOnClickListener {
             UtilityMethods.switchActivityWithData(this, NavigationActivity::class.java,
-                "Ficus, Gate", fullDestination) // TODO: get 'Gate' from Site Entrances
+                "Ficus, Gate", fullDestination) // TODO: update whole function after implementing multiple entrances UI
             finish()
         }
 
         val site: Site = MainActivity.site!!
-        val latLng = site.getEntrances().entries.first().value // TODO: implement choosing entrance
+        val latLng = site.getEntrances().entries.first().value
         val lat = latLng["latitude"]!!
         val lon = latLng["longitude"]!!
 
@@ -64,9 +64,9 @@ class GPSArrivalActivity: AppCompatActivity() {
         }
     }
 
-    // Deep link to Moovit TODO: Fix deeplink
+    // Deep link to Moovit
     private fun searchMoovit(dst: String, lat: Double, lon: Double) {
-        val url = "moovit://directions?dest_lat=$lat&dest_lon=$lon&dest_name=$dst"
+        val url = "moovit://directions?dest_lat=$lat&dest_lon=$lon&dest_name=$dst" // if bug, might not be installed, check
         try {
             val i = Intent(Intent.ACTION_VIEW)
             i.data = Uri.parse(url)

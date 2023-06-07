@@ -23,7 +23,6 @@ enum class A11y {
 class Path (
     @SerializedName("time") private val time: Int,
     @SerializedName("a11y") private val a11y: List<A11y>) {
-    // TODO: Should id be added to path? It is in Waypoint
     fun getTime() = time
     fun getA11y() = a11y
 
